@@ -1,5 +1,3 @@
-package ru.academits.bozhko.shapes;
-
 /**
  * Created by Serenity on 10.09.2017.
  */
