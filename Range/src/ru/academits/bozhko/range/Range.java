@@ -1,8 +1,9 @@
+package ru.academits.bozhko.range;
+
 /**
  * Created by Serenity on 10.09.2017.
  */
 public class Range {
-
     private double from;
     private double to;
 
@@ -25,16 +26,14 @@ public class Range {
         return this.from;
     }
 
- //   public double[] confluance
+    //  public double[] confluance
+   /*   public double[][] merger (Range secondRange) {
+          if to >=  secondRange.from {
+              merger[0][0]= from;
+              merger[0][1]= secondRange.to;
 
-  /*  public double[][] merger(Range secondRange) {
-        if to >= secondRange.from {
-            merger[0][0] = from;
-            merger[0][1] = secondRange.to;
-
-        }
-    }*/
-
+          }
+      } */
     public void setTo(double to) {
         double max = (from > to) ? from : to;
         double min = (from < to) ? from : to;
@@ -54,7 +53,5 @@ public class Range {
     public double getLength() {
         return Math.abs(to - from);
     }
+
 }
-
-
-

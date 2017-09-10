@@ -1,3 +1,5 @@
+package ru.academits.bozhko.segment;
+
 /**
  * Created by Serenity on 09.09.2017.
  */
