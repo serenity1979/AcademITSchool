@@ -21,58 +21,81 @@ public class Range {
     }
 
 // todo Пересечение в доработке
- /*
-  public Range getIntersection(Range secondRange) {
-        Range intersectionRange = new Range(0, 0);
 
-        if ((isInside(secondRange.from)) && (isInside(secondRange.to))) {
-            return intersectionRange; // null
+    public Range getIntersection(Range secondRange) {
+        if ((secondRange.from > to) || (from > secondRange.to)) {
+            return null;
         }
 
+        double newFrom = from;
+        double newTo;
         if (from < secondRange.from) {
-            if (isInside(secondRange.from)) {
-                intersectionRange.from = secondRange.from;
-                if (isInside(secondRange.to)) {
-                    intersectionRange.to = secondRange.to;
-                } else {
-                    intersectionRange.to = to;
-                }
+            if (secondRange.from <= to) {
+                newFrom = secondRange.from;
+            }
+            if (secondRange.to <= to) {
+                newTo = secondRange.to;
+            } else {
+                newTo = to;
             }
         } else {
-            if (isInside(secondRange.to)) {
-                intersectionRange.from = from;
-                intersectionRange.to = secondRange.to;
-            }
-            if (to < secondRange.to) {
-                intersectionRange.from = from;
-                intersectionRange.to = to;
+            newFrom = from;
+            if (to <= secondRange.to) {
+                newTo = to;
+            } else {
+                newTo = secondRange.to;
             }
         }
-        return intersectionRange;
+        return new Range(newFrom, newTo);
     }
-// todo объединение в оптимизации и проверке
+
     public Range[] toUnite(Range secondRange) {
-        Range[] unionRange = {null};
-        if (isInside(secondRange.from) || isInside(secondRange.to)) {
-            Range element = new Range(0, 0);
-            if (from <= secondRange.from) {
-                element.setFrom(from);
-            } else {
-                element.setFrom(secondRange.from);
-            }
-            if (to > secondRange.to) {
-                element.setTo(to);
-            } else {
-                element.setTo(secondRange.to);
-            }
-            unionRange[0] = element;
+        if (to < secondRange.from) {
+            Range[] unionRange = {this, secondRange};
+            return unionRange;
+        } else if (secondRange.to < from) {
+            Range[] unionRange = {secondRange, this};
+            return unionRange;
         } else {
-            unionRange[0] = this;
-            unionRange[1] = secondRange;
+            double newFrom;
+            double newTo;
+            if (from <= secondRange.from) {
+                newFrom = from;
+            } else {
+                newFrom = secondRange.from;
+            }
+            if (to <= secondRange.to) {
+                newTo = secondRange.to;
+            } else {
+                newTo = to;
+            }
+            Range[] unionRange = {new Range(newFrom, newTo)};
+            return unionRange;
         }
-        return unionRange;
     }
-    */
+
+    public Range[] isResidual(Range secondRange) {
+        if ((to < secondRange.from) || (secondRange.to < from)) {
+            Range[] ResidualRange = {this};
+            return ResidualRange;
+        } else if (from <= secondRange.from) {
+            if (to >= secondRange.to) {
+                Range[] ResidualRange = {new Range(from, secondRange.from), new Range(secondRange.to, to)};
+                return ResidualRange;
+            } else {
+                Range[] ResidualRange = {new Range(from, secondRange.from)};
+                return ResidualRange;
+            }
+        } else {
+            if (to >= secondRange.to) {
+                Range[] ResidualRange = {new Range(secondRange.to, to)};
+                return ResidualRange;
+            } else {
+                Range[] ResidualRange = {};
+                return ResidualRange;
+            }
+        }
+    }
 
     public void setTo(double to) {
         this.to = to;
