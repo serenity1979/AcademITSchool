@@ -48,36 +48,28 @@ public class Range {
         Range newSecondRange = new Range(secondRange.getFrom(), secondRange.getTo());
 
         if (newFirstRange.to < newSecondRange.from) {
-            Range[] unionRange = {newFirstRange, newSecondRange};
-            return unionRange;
+            return new Range[]{newFirstRange, newSecondRange};
         } else if (newSecondRange.to < newFirstRange.from) {
-            Range[] unionRange = {newSecondRange, newFirstRange};
-            return unionRange;
+            return new Range[]{newSecondRange, newFirstRange};
         } else {
-            Range[] unionRange = {new Range(Math.min(newFirstRange.from, newSecondRange.from), Math.max(newFirstRange.to, newSecondRange.to))};
-            return unionRange;
+            return new Range[]{new Range(Math.min(newFirstRange.from, newSecondRange.from), Math.max(newFirstRange.to, newSecondRange.to))};
         }
     }
 
     public Range[] getResidual(Range secondRange) {
         if ((to < secondRange.from) || (secondRange.to < from)) {
-            Range[] residualRange = {new Range(from, to)};
-            return residualRange;
+            return new Range[]{new Range(from, to)};
         } else if (from <= secondRange.from) {
             if (to >= secondRange.to) {
-                Range[] residualRange = {new Range(from, secondRange.from), new Range(secondRange.to, to)};
-                return residualRange;
+                return new Range[]{new Range(from, secondRange.from), new Range(secondRange.to, to)};
             } else {
-                Range[] residualRange = {new Range(from, secondRange.from)};
-                return residualRange;
+                return new Range[]{new Range(from, secondRange.from)};
             }
         } else {
             if (to >= secondRange.to) {
-                Range[] residualRange = {new Range(secondRange.to, to)};
-                return residualRange;
+                return new Range[]{new Range(secondRange.to, to)};
             } else {
-                Range[] residualRange = {};
-                return residualRange;
+                return new Range[]{};
             }
         }
 
