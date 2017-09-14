@@ -20,83 +20,6 @@ public class Range {
         return this.from;
     }
 
-// todo Пересечение в доработке
-
-    public Range getIntersection(Range secondRange) {
-        if ((secondRange.from > to) || (from > secondRange.to)) {
-            return null;
-        }
-
-        double newFrom = from;
-        double newTo;
-        if (from < secondRange.from) {
-            if (secondRange.from <= to) {
-                newFrom = secondRange.from;
-            }
-            if (secondRange.to <= to) {
-                newTo = secondRange.to;
-            } else {
-                newTo = to;
-            }
-        } else {
-            newFrom = from;
-            if (to <= secondRange.to) {
-                newTo = to;
-            } else {
-                newTo = secondRange.to;
-            }
-        }
-        return new Range(newFrom, newTo);
-    }
-
-    public Range[] toUnite(Range secondRange) {
-        if (to < secondRange.from) {
-            Range[] unionRange = {this, secondRange};
-            return unionRange;
-        } else if (secondRange.to < from) {
-            Range[] unionRange = {secondRange, this};
-            return unionRange;
-        } else {
-            double newFrom;
-            double newTo;
-            if (from <= secondRange.from) {
-                newFrom = from;
-            } else {
-                newFrom = secondRange.from;
-            }
-            if (to <= secondRange.to) {
-                newTo = secondRange.to;
-            } else {
-                newTo = to;
-            }
-            Range[] unionRange = {new Range(newFrom, newTo)};
-            return unionRange;
-        }
-    }
-
-    public Range[] isResidual(Range secondRange) {
-        if ((to < secondRange.from) || (secondRange.to < from)) {
-            Range[] ResidualRange = {this};
-            return ResidualRange;
-        } else if (from <= secondRange.from) {
-            if (to >= secondRange.to) {
-                Range[] ResidualRange = {new Range(from, secondRange.from), new Range(secondRange.to, to)};
-                return ResidualRange;
-            } else {
-                Range[] ResidualRange = {new Range(from, secondRange.from)};
-                return ResidualRange;
-            }
-        } else {
-            if (to >= secondRange.to) {
-                Range[] ResidualRange = {new Range(secondRange.to, to)};
-                return ResidualRange;
-            } else {
-                Range[] ResidualRange = {};
-                return ResidualRange;
-            }
-        }
-    }
-
     public void setTo(double to) {
         this.to = to;
     }
@@ -110,7 +33,53 @@ public class Range {
     }
 
     public double getLength() {
-        return Math.abs(to - from);
+        return to - from;
     }
 
+    public Range getIntersection(Range secondRange) {
+        if ((secondRange.from >= to) || (from >= secondRange.to)) {
+            return null;
+        }
+        return new Range(Math.max(from, secondRange.from), Math.min(to, secondRange.to));
+    }
+
+    public Range[] toUnite(Range secondRange) {
+        Range newFirstRange = new Range(from, to);
+        Range newSecondRange = new Range(secondRange.getFrom(), secondRange.getTo());
+
+        if (newFirstRange.to < newSecondRange.from) {
+            Range[] unionRange = {newFirstRange, newSecondRange};
+            return unionRange;
+        } else if (newSecondRange.to < newFirstRange.from) {
+            Range[] unionRange = {newSecondRange, newFirstRange};
+            return unionRange;
+        } else {
+            Range[] unionRange = {new Range(Math.min(newFirstRange.from, newSecondRange.from), Math.max(newFirstRange.to, newSecondRange.to))};
+            return unionRange;
+        }
+    }
+
+    public Range[] getResidual(Range secondRange) {
+        if ((to < secondRange.from) || (secondRange.to < from)) {
+            Range[] residualRange = {new Range(from, to)};
+            return residualRange;
+        } else if (from <= secondRange.from) {
+            if (to >= secondRange.to) {
+                Range[] residualRange = {new Range(from, secondRange.from), new Range(secondRange.to, to)};
+                return residualRange;
+            } else {
+                Range[] residualRange = {new Range(from, secondRange.from)};
+                return residualRange;
+            }
+        } else {
+            if (to >= secondRange.to) {
+                Range[] residualRange = {new Range(secondRange.to, to)};
+                return residualRange;
+            } else {
+                Range[] residualRange = {};
+                return residualRange;
+            }
+        }
+
+    }
 }
