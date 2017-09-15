@@ -45,9 +45,9 @@ public class Range {
 
     public Range[] toUnite(Range secondRange) {
         if (to < secondRange.from) {
-            return new Range[]{new Range(from, to), new Range(secondRange.getFrom(), secondRange.getTo())};
+            return new Range[]{new Range(from, to), new Range(secondRange.from, secondRange.to)};
         } else if (secondRange.to < from) {
-            return new Range[]{new Range(secondRange.getFrom(), secondRange.getTo()), new Range(from, to)};
+            return new Range[]{new Range(secondRange.from, secondRange.to), new Range(from, to)};
         } else {
             return new Range[]{new Range(Math.min(from, secondRange.from), Math.max(to, secondRange.to))};
         }
