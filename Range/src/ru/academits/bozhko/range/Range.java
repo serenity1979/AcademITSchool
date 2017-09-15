@@ -44,29 +44,26 @@ public class Range {
     }
 
     public Range[] toUnite(Range secondRange) {
-        Range newFirstRange = new Range(from, to);
-        Range newSecondRange = new Range(secondRange.getFrom(), secondRange.getTo());
-
-        if (newFirstRange.to < newSecondRange.from) {
-            return new Range[]{newFirstRange, newSecondRange};
-        } else if (newSecondRange.to < newFirstRange.from) {
-            return new Range[]{newSecondRange, newFirstRange};
+        if (to < secondRange.from) {
+            return new Range[]{new Range(from, to), new Range(secondRange.getFrom(), secondRange.getTo())};
+        } else if (secondRange.to < from) {
+            return new Range[]{new Range(secondRange.getFrom(), secondRange.getTo()), new Range(from, to)};
         } else {
-            return new Range[]{new Range(Math.min(newFirstRange.from, newSecondRange.from), Math.max(newFirstRange.to, newSecondRange.to))};
+            return new Range[]{new Range(Math.min(from, secondRange.from), Math.max(to, secondRange.to))};
         }
     }
 
     public Range[] getResidual(Range secondRange) {
         if ((to < secondRange.from) || (secondRange.to < from)) {
             return new Range[]{new Range(from, to)};
-        } else if (from <= secondRange.from) {
-            if (to >= secondRange.to) {
+        } else if (from < secondRange.from) {
+            if (to > secondRange.to) {
                 return new Range[]{new Range(from, secondRange.from), new Range(secondRange.to, to)};
             } else {
                 return new Range[]{new Range(from, secondRange.from)};
             }
         } else {
-            if (to >= secondRange.to) {
+            if (to > secondRange.to) {
                 return new Range[]{new Range(secondRange.to, to)};
             } else {
                 return new Range[]{};
