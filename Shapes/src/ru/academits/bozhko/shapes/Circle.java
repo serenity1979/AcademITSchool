@@ -10,20 +10,29 @@ public class Circle implements Shapes {
         super();
         this.radiusLength = radiusLength;
     }
+
     @Override
     public double getWidth() {
         return 2 * radiusLength;
     }
+
     @Override
     public double getHeight() {
         return 2 * radiusLength;
     }
+
     @Override
     public double getArea() {
         return 2 * Math.PI * Math.pow(radiusLength, 2);
     }
+
     @Override
     public double getPerimeter() {
         return 2 * Math.PI * radiusLength;
+    }
+
+    @Override
+    public String PrintShapes() {
+        return " Круг с радиусом " + radiusLength;
     }
 }

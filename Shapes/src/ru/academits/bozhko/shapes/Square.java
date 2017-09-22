@@ -31,5 +31,10 @@ public class Square implements Shapes {
     public double getPerimeter() {
         return sideLength * 4;
     }
+    @Override
+    public String PrintShapes() {
+        return " Квадрат со стороной " + sideLength;
+    }
 
 }
+
