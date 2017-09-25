@@ -1,9 +1,9 @@
-package ru.academits.bozhko.shapes;
+package ru.academits.bozhko.shape;
 
 /**
  * Created by Serenity on 20.09.2017.
  */
-public interface Shapes {
+public interface Shape {
     double getWidth();
 
     double getHeight();
@@ -11,6 +11,4 @@ public interface Shapes {
     double getArea();
 
     double getPerimeter();
-
-    String PrintShapes();
 }

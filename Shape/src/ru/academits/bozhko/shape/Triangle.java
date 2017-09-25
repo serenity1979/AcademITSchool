@@ -1,17 +1,16 @@
-package ru.academits.bozhko.shapes;
+package ru.academits.bozhko.shape;
 
 /**
  * Created by Serenity on 21.09.2017.
  */
 
-public class Triangle implements Shapes {
+public class Triangle implements Shape {
 
     private Point pointA;
     private Point pointB;
     private Point pointC;
 
     public Triangle(Point pointA, Point pointB, Point pointC) {
-        super();
         this.pointA = pointA;
         this.pointB = pointB;
         this.pointC = pointC;
@@ -37,7 +36,8 @@ public class Triangle implements Shapes {
 
     @Override
     public double getArea() {
-        return getWidth() * getHeight() / 2;
+
+        return Math.abs((pointA.getX() - pointC.getX()) * (pointB.getY() - pointC.getY()) - (pointB.getX() - pointC.getX()) * (pointA.getY() - pointC.getY())) / 2;
     }
 
     @Override
@@ -45,8 +45,29 @@ public class Triangle implements Shapes {
         return pointA.getDistance(pointB) + pointB.getDistance(pointC) + pointC.getDistance(pointA);
     }
 
-    public String PrintShapes() {
+    public String toString() {
         return " Треугольник , вершины которого находятся в точках А(" + pointA.getX() + ", " + pointA.getY() + "), B(" + pointB.getX() + ", " + pointB.getY() + "), C(" + pointC.getX() + ", " + pointC.getY() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || o.getClass() != this.getClass()) return false;
+
+        Triangle triangle = (Triangle) o;
+        if (!pointA.equals(triangle.pointA)) return false;
+        if (!pointB.equals(triangle.pointB)) return false;
+        return pointC.equals(triangle.pointC);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 33;
+        int hash = 1;
+        hash = prime * hash + (pointA != null ? pointA.hashCode() : 0);
+        hash = prime * hash + (pointB != null ? pointB.hashCode() : 0);
+        hash = prime * hash + (pointC != null ? pointC.hashCode() : 0);
+        return hash;
     }
 }
 
