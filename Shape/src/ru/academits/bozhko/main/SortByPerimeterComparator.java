@@ -11,6 +11,6 @@ public class SortByPerimeterComparator implements Comparator<Shape> {
         double parameter1 = obj1.getPerimeter();
         double parameter2 = obj2.getPerimeter();
 
-        return Double.compare(parameter1, parameter2);
+        return Double.compare(parameter2, parameter1);
     }
 }
