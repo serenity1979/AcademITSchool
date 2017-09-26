@@ -38,7 +38,10 @@ public class Point {
             return false;
         }
         Point point = (Point) o;
-        return !(x != point.x) && y == point.y;
+        if (x != point.x) {
+            return false;
+        }
+        return y == point.y;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class Main {
         }
         Shape[] sortArrayShape = new Shape[arrayLength];
         System.arraycopy(listShapes, 0, sortArrayShape, 0, arrayLength);
-        Arrays.sort(sortArrayShape, new SortByArea());
+        Arrays.sort(sortArrayShape, new SortByAreaComparator());
         return sortArrayShape[0];
     }
 
@@ -70,7 +70,7 @@ public class Main {
         }
         Shape[] sortArrayShape = new Shape[arrayLength];
         System.arraycopy(listShapes, 0, sortArrayShape, 0, arrayLength);
-        Arrays.sort(sortArrayShape, new SortByPerimeter());
+        Arrays.sort(sortArrayShape, new SortByPerimeterComparator());
         return sortArrayShape[signOrderIndex - 1];
     }
 

@@ -1,13 +1,9 @@
 package ru.academits.bozhko.main;
 
 import ru.academits.bozhko.shape.Shape;
-
 import java.util.Comparator;
 
-/**
- * Created by Serenity on 26.09.2017.
- */
-public class SortByArea implements Comparator<Shape> {
+public class SortByAreaComparator implements Comparator<Shape> {
 
     @Override
     public int compare(Shape obj1, Shape obj2) {

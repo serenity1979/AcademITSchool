@@ -43,7 +43,10 @@ public class Rectangle implements Shape {
             return false;
         }
         Rectangle rectangle = (Rectangle) o;
-        return !(rectangle.sideWidth != sideWidth) && rectangle.sideHeight == sideHeight;
+        if (rectangle.sideWidth != sideWidth) {
+            return false;
+        }
+        return rectangle.sideHeight == sideHeight;
     }
 
     @Override
