@@ -1,11 +1,6 @@
 package ru.academits.bozhko.shape;
 
-/**
- * Created by Serenity on 21.09.2017.
- */
-
 public class Triangle implements Shape {
-
     private Point pointA;
     private Point pointB;
     private Point pointC;
@@ -51,13 +46,14 @@ public class Triangle implements Shape {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || o.getClass() != this.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
         Triangle triangle = (Triangle) o;
-        if (!pointA.equals(triangle.pointA)) return false;
-        if (!pointB.equals(triangle.pointB)) return false;
-        return pointC.equals(triangle.pointC);
+        return pointA.equals(triangle.pointA) && pointB.equals(triangle.pointB) && pointC.equals(triangle.pointC);
     }
 
     @Override
@@ -70,4 +66,3 @@ public class Triangle implements Shape {
         return hash;
     }
 }
-

@@ -1,11 +1,6 @@
 package ru.academits.bozhko.shape;
 
-/**
- * Created by Serenity on 21.09.2017.
- */
-
 public class Rectangle implements Shape {
-
     private double sideWidth;
     private double sideHeight;
 
@@ -41,10 +36,14 @@ public class Rectangle implements Shape {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o==null || o.getClass() !=this.getClass()) return false;
-        if (((Rectangle) o).sideWidth != sideWidth) return false;
-        return ((Rectangle) o).sideHeight == sideHeight;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+        Rectangle rectangle = (Rectangle) o;
+        return !(rectangle.sideWidth != sideWidth) && rectangle.sideHeight == sideHeight;
     }
 
     @Override
@@ -56,4 +55,3 @@ public class Rectangle implements Shape {
         return hash;
     }
 }
-

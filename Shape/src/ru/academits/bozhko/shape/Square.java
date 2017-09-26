@@ -1,12 +1,6 @@
 package ru.academits.bozhko.shape;
 
-/**
- * Created by Serenity on 20.09.2017.
- */
-
-
 public class Square implements Shape {
-
     private double sideLength;
 
     public Square(double sideLength) {
@@ -40,9 +34,14 @@ public class Square implements Shape {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o==null || o.getClass() !=this.getClass()) return false;
-        return ((Square) o).sideLength == sideLength;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+        Square square = (Square) o;
+        return square.sideLength == sideLength;
     }
 
     @Override
@@ -53,5 +52,3 @@ public class Square implements Shape {
         return hash;
     }
 }
-
-
