@@ -19,6 +19,9 @@ public class Vector {
 
     public Vector(double[] array) {
         int n = array.length;
+        if (n <= 0) {
+            throw new IllegalArgumentException("инициализация не прошла, размерность <=0");
+        }
         this.components = Arrays.copyOf(array, n);
     }
 
@@ -33,19 +36,28 @@ public class Vector {
         return this.components.length;
     }
 
-    public double getComponents(int index) {
+    public double getLength() {
+        double sumOfSquares = 0;
+        for (double element : components) {
+            sumOfSquares = sumOfSquares + Math.pow(element, 2);
+        }
+        return Math.sqrt(sumOfSquares);
+    }
+
+    public double getComponent(int index) {
         if (index >= components.length) {
             return 0;
         }
         return components[index];
     }
 
-    public void setComponents(int index, double coordinate) {
+    public void setComponent(int index, double coordinate) {
         if (index < 0) {
             throw new IllegalArgumentException("несуществующий индекс");
         }
         if (index >= components.length) {
-            this.components = Arrays.copyOf(components, index);
+            int delta = index - components.length;
+            System.arraycopy(new double[delta], 0, components, components.length, delta);
         }
         this.components[index] = coordinate;
     }
@@ -53,18 +65,20 @@ public class Vector {
     @Override
     public String toString() {
         StringBuilder componentsString = new StringBuilder();
-        for (Double element : components) {
+        componentsString.append("{");
+        for (double element : components) {
             componentsString.append(element).append(",");
         }
         componentsString.deleteCharAt(componentsString.length() - 1);
-        return "{" + componentsString.toString() + "}";
+        return componentsString.append("}").toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Vector)) return false;
-
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
         Vector vector = (Vector) o;
         return Arrays.equals(components, vector.components);// && (components.length == vector.getSize());
     }
@@ -89,10 +103,14 @@ public class Vector {
     }
 
     public Vector sumVectors(Vector secondVector) {
-        int newLength = (components.length > secondVector.getSize()) ? components.length : secondVector.getSize();
-        components = Arrays.copyOf(components, newLength);
-        for (int i = 0; i < secondVector.getSize(); i++) {
-            components[i] = components[i] + secondVector.components[i];
+        int maxLength = Math.max(components.length, secondVector.getSize());
+        int delta = maxLength - components.length;
+        if (delta < 0) {
+            System.arraycopy(new double[delta], 0, components, components.length, delta);
+        }
+        int minLength = Math.min(components.length, secondVector.getSize());
+        for (int i = 0; i < minLength; i++) {
+            this.components[i] = this.components[i] + secondVector.components[i];
         }
         return this;
     }
@@ -103,9 +121,13 @@ public class Vector {
     }
 
     public Vector residualVectors(Vector secondVector) {
-        int newLength = (components.length > secondVector.getSize()) ? components.length : secondVector.getSize();
-        components = Arrays.copyOf(components, newLength);
-        for (int i = 0; i < secondVector.getSize(); ++i) {
+        int maxLength = Math.max(components.length, secondVector.getSize());
+        int delta = maxLength - components.length;
+        if (delta < 0) {
+            System.arraycopy(new double[delta], 0, components, components.length, delta);
+        }
+        int minLength = Math.min(components.length, secondVector.getSize());
+        for (int i = 0; i < minLength; ++i) {
             components[i] = components[i] - secondVector.components[i];
         }
         return this;
@@ -120,7 +142,7 @@ public class Vector {
         int minLength = (firstVector.getSize() < secondVector.getSize()) ? firstVector.getSize() : secondVector.getSize();
         double sumOfFactors = 0;
         for (int i = 0; i < minLength; i++) {
-            sumOfFactors = sumOfFactors + firstVector.getComponents(i) * secondVector.getComponents(i);
+            sumOfFactors = sumOfFactors + firstVector.getComponent(i) * secondVector.getComponent(i);
         }
         return sumOfFactors;
     }
