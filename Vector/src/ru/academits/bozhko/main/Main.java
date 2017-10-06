@@ -5,7 +5,7 @@ import ru.academits.bozhko.vector.Vector;
 public class Main {
     public static void main(String[] args) {
         Vector myVector1 = new Vector(3);
-        Vector myVector2 = new Vector(new double[]{10, 5.6});
+        Vector myVector2 = new Vector(new double[]{10, 5.2});
         Vector myVector3 = new Vector(4, new double[]{10, 12, 3});
         Vector myVector4 = new Vector(myVector2);
 
@@ -20,22 +20,20 @@ public class Main {
 
         System.out.printf("Длина вектора 3: %.3f %n%n", myVector3.getLength());
 
-        System.out.println("Прибавление к вектору другого вектора:");
+        System.out.printf("Прибавление к вектору другого вектора:например, V3 %s и V4 %s %n", myVector3.toString(), myVector4.toString());
+        Vector myVector5 = Vector.sumVectors(myVector4, myVector3);
+        System.out.printf("-(статический метод)   вектор 4 и вектор 3: %s %n", myVector5.toString());
+        System.out.printf("                      Координаты вектора 4: %s %n", myVector4.toString());
         myVector3.sumVectors(myVector4);
         System.out.printf("-(нестатический метод) вектор 3 и вектор 4: %s %n", myVector3.toString());
-        System.out.printf("                      Координаты вектора 3: %s %n", myVector3.toString());
+        System.out.printf("                      Координаты вектора 3: %s %n%n", myVector3.toString());
 
-        Vector myVector5 = Vector.sumVectors(myVector2, myVector4);
-        System.out.printf("-(статический метод)   вектор 2 и вектор 4: %s %n", myVector5.toString());
-        System.out.printf("                      Координаты вектора 2: %s %n%n", myVector2.toString());
-
-        System.out.println("Вычитание из вектора лругого вектора:");
-        myVector3.residualVectors(myVector5);
-        System.out.printf("-(нестатический метод) из вектора 3 вектор 5: %s %n", myVector3.toString());
-        System.out.printf("                        Координаты вектора 3: %s %n", myVector3.toString());
-
+        System.out.printf("Вычитание из вектора другого вектора: например, V4 %s и V1 %s %n", myVector4.toString(), myVector1.toString());
         Vector myVector6 = Vector.residualVectors(myVector4, myVector1);
         System.out.printf("-(статический метод)   из вектора 4 вектор 1: %s %n", myVector6.toString());
+        System.out.printf("                        Координаты вектора 4: %s %n", myVector4.toString());
+        myVector4.residualVectors(myVector1);
+        System.out.printf("-(нестатический метод) из вектора 4 вектор 1: %s %n", myVector4.toString());
         System.out.printf("                        Координаты вектора 4: %s %n%n", myVector4.toString());
 
         System.out.printf("Умножение вектора 3 на скаляр 4. Координаты вектора 3: %s %n%n", myVector3.multiplyVectorByScalar(4).toString());

@@ -39,25 +39,21 @@ public class Vector {
     public double getLength() {
         double sumOfSquares = 0;
         for (double element : components) {
-            sumOfSquares = sumOfSquares + Math.pow(element, 2);
+            sumOfSquares += Math.pow(element, 2);
         }
         return Math.sqrt(sumOfSquares);
     }
 
     public double getComponent(int index) {
-        if (index >= components.length) {
-            return 0;
+        if (index >= components.length || index < 0) {
+            throw new IllegalArgumentException("несуществующий индекс");
         }
         return components[index];
     }
 
     public void setComponent(int index, double coordinate) {
-        if (index < 0) {
+        if (index < 0 || index > components.length) {
             throw new IllegalArgumentException("несуществующий индекс");
-        }
-        if (index >= components.length) {
-            int delta = index - components.length;
-            System.arraycopy(new double[delta], 0, components, components.length, delta);
         }
         this.components[index] = coordinate;
     }
@@ -75,19 +71,21 @@ public class Vector {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
         if (o == null || o.getClass() != this.getClass()) {
             return false;
         }
         Vector vector = (Vector) o;
-        return Arrays.equals(components, vector.components);// && (components.length == vector.getSize());
+        return Arrays.equals(components, vector.components);
     }
 
     @Override
     public int hashCode() {
         final int prime = 30;
         int hash = 1;
-        hash = prime * hash + prime * components.length + Arrays.hashCode(components);
+        hash = prime * hash + Arrays.hashCode(components);
         return hash;
     }
 
@@ -104,13 +102,12 @@ public class Vector {
 
     public Vector sumVectors(Vector secondVector) {
         int maxLength = Math.max(components.length, secondVector.getSize());
-        int delta = maxLength - components.length;
-        if (delta < 0) {
-            System.arraycopy(new double[delta], 0, components, components.length, delta);
+        if (maxLength - components.length > 0) {
+            components = Arrays.copyOf(components, maxLength);
         }
         int minLength = Math.min(components.length, secondVector.getSize());
         for (int i = 0; i < minLength; i++) {
-            this.components[i] = this.components[i] + secondVector.components[i];
+            this.components[i] += secondVector.components[i];
         }
         return this;
     }
@@ -122,13 +119,12 @@ public class Vector {
 
     public Vector residualVectors(Vector secondVector) {
         int maxLength = Math.max(components.length, secondVector.getSize());
-        int delta = maxLength - components.length;
-        if (delta < 0) {
-            System.arraycopy(new double[delta], 0, components, components.length, delta);
+        if (maxLength - components.length > 0) {
+            components = Arrays.copyOf(components, maxLength);
         }
         int minLength = Math.min(components.length, secondVector.getSize());
         for (int i = 0; i < minLength; ++i) {
-            components[i] = components[i] - secondVector.components[i];
+            components[i] -= secondVector.components[i];
         }
         return this;
     }
@@ -139,12 +135,11 @@ public class Vector {
     }
 
     public static double multiplyVector(Vector firstVector, Vector secondVector) {
-        int minLength = (firstVector.getSize() < secondVector.getSize()) ? firstVector.getSize() : secondVector.getSize();
+        int minLength = Math.min(firstVector.getSize(), secondVector.getSize());
         double sumOfFactors = 0;
         for (int i = 0; i < minLength; i++) {
-            sumOfFactors = sumOfFactors + firstVector.getComponent(i) * secondVector.getComponent(i);
+            sumOfFactors += firstVector.getComponent(i) * secondVector.getComponent(i);
         }
         return sumOfFactors;
     }
-
 }
