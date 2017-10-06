@@ -52,7 +52,7 @@ public class Vector {
     }
 
     public void setComponent(int index, double coordinate) {
-        if (index < 0 || index > components.length) {
+        if (index < 0 || index >= components.length) {
             throw new IllegalArgumentException("несуществующий индекс");
         }
         this.components[index] = coordinate;
