@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AcademITSchool.iml" filepath="$PROJECT_DIR$/AcademITSchool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Matrix/Matrix.iml" filepath="$PROJECT_DIR$/Matrix/Matrix.iml" />
       <module fileurl="file://$PROJECT_DIR$/Range/Range.iml" filepath="$PROJECT_DIR$/Range/Range.iml" />
       <module fileurl="file://$PROJECT_DIR$/Segment/Segment.iml" filepath="$PROJECT_DIR$/Segment/Segment.iml" />
       <module fileurl="file://$PROJECT_DIR$/Shape/Shape.iml" filepath="$PROJECT_DIR$/Shape/Shape.iml" />
