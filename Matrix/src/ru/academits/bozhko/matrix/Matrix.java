@@ -10,7 +10,7 @@ public class Matrix {
         if (n <= 0) {
             throw new IllegalArgumentException("инициализация не прошла, размерность <=0");
         }
-        //    this.componentsMatrix = new double[n][m];
+
         componentsMatrix = new Vector[n];
         for (int i = 0; i < n; ++i) {
             componentsMatrix[i] = new Vector(m);
@@ -23,8 +23,6 @@ public class Matrix {
         if (n <= 0 || m <= 0) {
             throw new IllegalArgumentException("инициализация не прошла, размерность <=0");
         }
-        //  this.componentsMatrix = Arrays.copyOf(matrix.componentsMatrix, matrix.components.length);
-
         componentsMatrix = new Vector[n];
         for (int i = 0; i < n; ++i) {
             componentsMatrix[i] = new Vector(matrix.getRowOfMatrix(i));
@@ -36,6 +34,7 @@ public class Matrix {
         if (n <= 0) {
             throw new IllegalArgumentException("инициализация не прошла, размерность <=0");
         }
+        componentsMatrix = new Vector[n];
         for (int i = 0; i < n; ++i) {
             this.componentsMatrix[i] = new Vector(array[i]);
         }
@@ -98,7 +97,6 @@ public class Matrix {
     }
 
     public void setVectorRowOfMatrix(int indexN, Vector coordinateVector) {
-        //todo пересмотреть условие n строки, m колонки
         if (indexN >= componentsMatrix.length || indexN < 0) {
             throw new IllegalArgumentException("несуществующий индекс");
         }
@@ -143,9 +141,46 @@ public class Matrix {
     }
 
     public Matrix multiplyMatrixByScalar(double scalar) {
-        for (int i = 0; i < componentsMatrix.length; i++) {
-            componentsMatrix[i].multiplyVectorByScalar(scalar);
+
+        for (Vector vector : componentsMatrix) {
+            vector.multiplyVectorByScalar(scalar);
         }
         return this;
+    }
+
+    public Matrix sumMatrix(Matrix secondMatrix) {
+        if (componentsMatrix.length != secondMatrix.getSizeOfRow() && componentsMatrix[0].getSize() != secondMatrix.getSizeOfColumn()) {
+            throw new IllegalArgumentException("матрицы разных размеров");
+        }
+        for (int i = 0; i < componentsMatrix.length; ++i) {
+            componentsMatrix[i].sumVectors(secondMatrix.getRowOfMatrix(i));
+        }
+        return this;
+    }
+
+    public Matrix residualMatrix(Matrix secondMatrix) {
+        if (componentsMatrix.length != secondMatrix.getSizeOfRow() && componentsMatrix[0].getSize() != secondMatrix.getSizeOfColumn()) {
+            throw new IllegalArgumentException("Матрицы разных размеров");
+        }
+        for (int i = 0; i < componentsMatrix.length; ++i) {
+            componentsMatrix[i].residualVectors(secondMatrix.getRowOfMatrix(i));
+        }
+        return this;
+    }
+
+    public static Matrix sumMatrix(Matrix firstMatrix, Matrix secondMatrix) {
+        if (firstMatrix.getSizeOfRow() != secondMatrix.getSizeOfRow() && firstMatrix.getSizeOfColumn() != secondMatrix.getSizeOfColumn()) {
+            throw new IllegalArgumentException("матрицы разных размеров");
+        }
+        Matrix newMatrix = new Matrix(firstMatrix);
+        return newMatrix.sumMatrix(secondMatrix);
+    }
+
+    public static Matrix residualMatrix(Matrix firstMatrix, Matrix secondMatrix) {
+        if (firstMatrix.getSizeOfRow() != secondMatrix.getSizeOfRow() && firstMatrix.getSizeOfColumn() != secondMatrix.getSizeOfColumn()) {
+            throw new IllegalArgumentException("матрицы разных размеров");
+        }
+        Matrix newMatrix = new Matrix(firstMatrix);
+        return newMatrix.residualMatrix(secondMatrix);
     }
 }
