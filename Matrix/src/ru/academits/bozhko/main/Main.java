@@ -34,7 +34,7 @@ public class Main {
         Matrix myMatrix4 = new Matrix(new double[][]{{15, 6}, {25.3, 5}, {14, 7.8}});
         Matrix myMatrix5 = Matrix.residualMatrix(myMatrix4, myMatrix3);
         System.out.printf("- нестатитечский метод: M4 %s и М3 %s M5:%s%n", myMatrix4.toString(), myMatrix3.toString(), myMatrix5.toString());
-        System.out.printf("                        M4 %s и М3 %s%n", myMatrix3.toString(), myMatrix3.toString());
+        System.out.printf("                        M4 %s и М3 %s%n", myMatrix4.toString(), myMatrix3.toString());
         System.out.printf("- статитечский метод:   М4 %s и М3 %s :%s%n", myMatrix4.toString(), myMatrix3.toString(), myMatrix4.residualMatrix(myMatrix3).toString());
         System.out.printf("                        M4 %s и М3 %s%n", myMatrix4.toString(), myMatrix3.toString());
     }
