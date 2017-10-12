@@ -29,10 +29,10 @@ public class Main {
         System.out.printf("                      Координаты вектора 3: %s %n%n", myVector3.toString());
 
         System.out.printf("Вычитание из вектора другого вектора: например, V4 %s и V1 %s %n", myVector4.toString(), myVector1.toString());
-        Vector myVector6 = Vector.residualVectors(myVector4, myVector1);
+        Vector myVector6 = Vector.subtractionVectors(myVector4, myVector1);
         System.out.printf("-(статический метод)   из вектора 4 вектор 1: %s %n", myVector6.toString());
         System.out.printf("                        Координаты вектора 4: %s %n", myVector4.toString());
-        myVector4.residualVectors(myVector1);
+        myVector4.subtractionVectors(myVector1);
         System.out.printf("-(нестатический метод) из вектора 4 вектор 1: %s %n", myVector4.toString());
         System.out.printf("                        Координаты вектора 4: %s %n%n", myVector4.toString());
 

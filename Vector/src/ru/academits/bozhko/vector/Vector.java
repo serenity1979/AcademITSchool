@@ -117,7 +117,7 @@ public class Vector {
         return newVector.sumVectors(secondVector);
     }
 
-    public Vector residualVectors(Vector secondVector) {
+    public Vector subtractionVectors(Vector secondVector) {
         int maxLength = Math.max(components.length, secondVector.getSize());
         if (maxLength - components.length > 0) {
             components = Arrays.copyOf(components, maxLength);
@@ -129,9 +129,9 @@ public class Vector {
         return this;
     }
 
-    public static Vector residualVectors(Vector firstVector, Vector secondVector) {
+    public static Vector subtractionVectors(Vector firstVector, Vector secondVector) {
         Vector newVector = new Vector(firstVector);
-        return newVector.residualVectors(secondVector);
+        return newVector.subtractionVectors(secondVector);
     }
 
     public static double multiplyVector(Vector firstVector, Vector secondVector) {
