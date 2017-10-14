@@ -99,7 +99,7 @@ public class Matrix {
         return columnVector;
     }
 
-    public void setVectorRowOfMatrix(int indexN, Vector coordinateVector) {
+    public void setRow(int indexN, Vector coordinateVector) {
         if (indexN >= this.getRowsCount() || indexN < 0) {
             throw new IndexOutOfBoundsException("выход за границы,несуществующий индекс");
         }
@@ -109,12 +109,12 @@ public class Matrix {
         this.rows[indexN] = new Vector(coordinateVector);
     }
 
-    public void setVectorColumnOfMatrix(int indexM, Vector coordinateVector) {
+    public void setColumn(int indexM, Vector coordinateVector) {
         if (indexM >= getColumnsCount() || indexM < 0) {
             throw new IndexOutOfBoundsException("выход за границы,несуществующий индекс");
         }
         int n = this.getRowsCount();
-        if (indexM > 0 && coordinateVector.getSize() != n) {
+        if (coordinateVector.getSize() != n) {
             throw new IllegalArgumentException("длина вектора не соответствует размеру матрицы");
         }
         for (int j = 0; j < n; ++j) {
@@ -195,9 +195,6 @@ public class Matrix {
         if (n == 1) {
             return rows[0].getComponent(0);
         }
-        if (n == 2) {
-            return rows[0].getComponent(0) * rows[1].getComponent(1) - rows[1].getComponent(0) * rows[0].getComponent(1);
-        }
         return getDeterminant(this);
     }
 
@@ -220,7 +217,7 @@ public class Matrix {
                     newMinorRow.setComponent(v, matrix.getRow(k).getComponent(l));
                     ++l;
                 }
-                minor.setVectorRowOfMatrix(k - 1, newMinorRow);
+                minor.setRow(k - 1, newMinorRow);
             }
             sum += Math.pow((double) -1, j) * matrix.getRow(0).getComponent(j) * getDeterminant(minor);
         }
@@ -241,7 +238,7 @@ public class Matrix {
             for (int j = 0; j < m2; ++j) {
                 newVector.setComponent(j, Vector.multiplyVector(firstMatrix.getRow(i), secondMatrix.getColumn(j)));
             }
-            newMatrix.setVectorRowOfMatrix(i, newVector);
+            newMatrix.setRow(i, newVector);
         }
         return newMatrix;
     }

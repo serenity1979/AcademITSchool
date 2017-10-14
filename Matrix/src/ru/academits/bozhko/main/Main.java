@@ -6,13 +6,13 @@ import ru.academits.bozhko.vector.Vector;
 public class Main {
     public static void main(String[] args) {
         Matrix myMatrix1 = new Matrix(2, 3);
-        myMatrix1.setVectorRowOfMatrix(0, new Vector(new double[]{10, 5.2, 25}));
+        myMatrix1.setRow(0, new Vector(new double[]{10, 5.2, 25}));
         System.out.println(myMatrix1.toString());
 
-        myMatrix1.setVectorColumnOfMatrix(1, new Vector(new double[]{16, 32}));
+        myMatrix1.setColumn(1, new Vector(new double[]{16, 32}));
         System.out.println(myMatrix1.toString());
         Vector myVector1 = new Vector(new double[]{11, 15, 19});
-        myMatrix1.setVectorRowOfMatrix(1, myVector1);
+        myMatrix1.setRow(1, myVector1);
         System.out.println(myMatrix1.toString());
         System.out.printf("Размер матрицы %dx%d%n", myMatrix1.getRowsCount(), myMatrix1.getColumnsCount());
         System.out.printf("вектор строка  [1]:%s%n", myMatrix1.getRow(0));
