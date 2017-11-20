@@ -23,8 +23,8 @@ public class Main {
         System.out.println(list);
         System.out.println(newList);
 
-        int listLength = list.size()-1;
-        for (int i = listLength; i>=0;--i) {
+        int listLength = list.size() - 1;
+        for (int i = listLength; i >= 0; --i) {
             if (list.get(i) % 2 == 0) {
                 list.remove(i);
             }
