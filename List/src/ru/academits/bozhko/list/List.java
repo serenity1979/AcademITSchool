@@ -42,11 +42,12 @@ public class List<T> {
     // вставка элемента в начало
     public void addBeginItem(T data) {
         ListItem<T> p = new ListItem<T>(data, head);
+        head = p;
         this.listSize++;
     }
 
     // вставка элемента по индексу
-    public void addBeginItem(int index, T data) {
+    public void addIndexItem(int index, T data) {
         ListItem<T> p = getIndexImen(index);
         ListItem<T> q = new ListItem<T>(data);
         q.setNext(p.getNext());
@@ -54,26 +55,77 @@ public class List<T> {
         this.listSize++;
     }
 
-/* получение/изменение значения по указанному индексу.Изменение значения по индексу пусть выдает старое значение.
+    // получение/изменение значения по указанному индексу.Изменение значения по индексу пусть выдает старое значение.
+    public T changeDataIndexItem(int index, T data) {
+        ListItem<T> p = getIndexImen(index);
+        T oldData = p.getData();
+        p.setData(data);
+        return oldData;
+    }
 
+    //удаление элемента по индексу, пусть выдает значение элемента
+    public T deleteIndexListItem(int index) {
+        T oldData = null;
+        if (index > 1 && index <= listSize) {
+            ListItem<T> p = getIndexImen(index - 1);
+            ListItem<T> q = p.getNext();
+            oldData = q.getData();
+            p.setNext(q.getNext());
+            this.listSize--;
+        } else if (index == 1) {
+            oldData = deleteFirstListItem();
+        }
+        return oldData;
+    }
 
-удаление элемента по индексу, пусть выдает значение элемента
-удаление узла по значению
-удаление первого элемента, пусть выдает значение элемента
+    //удаление первого элемента, пусть выдает значение элемента
+    public T deleteFirstListItem() {
+        T oldData = head.getData();
+        head = head.getNext();
+        this.listSize--;
+        return oldData;
+    }
+
+    //удаление узла по значению
+    public boolean deleteValueListItem(T data) {
+        for (ListItem<T> p = head; p != null; p = p.getNext()) {
+            if (data.equals(p.getData())) {
+                p.setNext(p.getNext().getNext());
+                this.listSize--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //разворот списка за линейное время
+
+    public void turnoverList() {
+        ListItem<T> p = head;
+        ListItem<T> qVariable = head.getNext();
+        p.setNext(null);
+        while (qVariable != null) {
+            ListItem<T> q = qVariable;
+            qVariable = q.getNext();
+            q.setNext(p);
+            p = q;
+        }
+        head = p;
+    }
+
+    @Override
+    public String toString() {
+        //     return super.toString();
+        StringBuilder componentsString = new StringBuilder();
+        for (ListItem<T> p = head; p != null; p = p.getNext()) {
+            componentsString.append((p.getData()).toString()).append(" ");
+        }
+        return componentsString.toString();
+    }
+
+    /*
 вставка и удаление узла после указанного узла
-разворот списка за линейное время
 копирование списка
 
  */
-
-/*
-
-
-    public void setHead(ListItem<T> head) {
-        this.head = head;
-    }
-
-    public void setListSize(int listSize) {
-        this.listSize = listSize;
-    }*/
 }
