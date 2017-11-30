@@ -13,17 +13,17 @@ public class List<T> {
         this.listSize = 1;
     }
 
-    // получение размера списка
+    // + получение размера списка
     public int getSize() {
         return listSize;
     }
 
-    // получение первого узла
+    // + получение первого узла
     public ListItem<T> getHead() {
         return head;
     }
 
-    //получение узла по индексу
+    // + получение узла по индексу
     public ListItem<T> getIndexItem(int index) {
         if (index < 0 || index > listSize) {
             throw new IllegalArgumentException("индекс вне диапозона списка");
@@ -39,27 +39,31 @@ public class List<T> {
         return null;
     }
 
-    // вставка элемента в начало
+    // + вставка элемента в начало
     public void addBeginItem(T data) {
         if (data != null) {
-            ListItem<T> p = new ListItem<T>(data, head);
-            head = p;
+            head = new ListItem<>(data, head);
             this.listSize++;
         }
     }
 
-    // вставка элемента по индексу
+    // + вставка элемента по индексу
     public void insertByIndexItem(int index, T data) {
+        if (index < 0 || index > listSize) {
+            throw new IllegalArgumentException("индекс вне диапозона списка");
+        }
         if (data != null) {
-            ListItem<T> p = getIndexItem(index);
-            ListItem<T> q = new ListItem<T>(data);
-            q.setNext(p.getNext());
-            p.setNext(q);
-            this.listSize++;
+            if (index == 0) {
+                this.addBeginItem(data);
+            } else {
+                ListItem<T> p = getIndexItem(index - 1);
+                p.setNext(new ListItem<>(data, p.getNext()));
+                this.listSize++;
+            }
         }
     }
 
-    // получение/изменение значения по указанному индексу.Изменение значения по индексу пусть выдает старое значение.
+    // + получение/изменение значения по указанному индексу.Изменение значения по индексу пусть выдает старое значение.
     public T changeDataIndex(int index, T data) {
         if (data != null) {
             ListItem<T> p = getIndexItem(index);
@@ -70,10 +74,10 @@ public class List<T> {
         return null;
     }
 
-    //удаление элемента по индексу, пусть выдает значение элемента
+    //+ удаление элемента по индексу, пусть выдает значение элемента +
     public T deleteByIndexItem(int index) {
         T oldData = null;
-        if (index > 0 && index < listSize) {  // использовать метод +/- следующий элемент
+        if (index > 0 && index < listSize) {
             ListItem<T> p = getIndexItem(index - 1);
             ListItem<T> q = p.getNext();
             oldData = q.getData();
@@ -85,7 +89,7 @@ public class List<T> {
         return oldData;
     }
 
-    //удаление первого элемента, пусть выдает значение элемента
+    //+ удаление первого элемента, пусть выдает значение элемента
     public T deleteFirstItem() {
         T oldData = head.getData();
         head = head.getNext();
@@ -93,10 +97,10 @@ public class List<T> {
         return oldData;
     }
 
-    //удаление узла по значению
+    //+ удаление узла по значению
     public boolean deleteValueItem(T data) {
         for (ListItem<T> p = head; p != null; p = p.getNext()) {
-            if (data.equals(p.getData())) {
+            if (data.equals(p.getNext().getData())) {
                 p.setNext(p.getNext().getNext());
                 this.listSize--;
                 return true;
@@ -105,7 +109,7 @@ public class List<T> {
         return false;
     }
 
-    //разворот списка за линейное время
+    // + разворот списка за линейное время
 
     public void turnoverList() {
         ListItem<T> p = head;
@@ -120,42 +124,41 @@ public class List<T> {
         head = p;
     }
 
-    //вставка узла после указанного узла   - а если указан узел не из текущего списка... нужна проверка?
+    // + вставка узла после указанного узла   - а если указан узел не из текущего списка... нужна проверка? +
     public void addNextNewItem(ListItem<T> listItem, T newData) {
-        ListItem<T> newListItem = new ListItem<T>(newData);
-        if (listItem == null) {
-            this.addBeginItem(newListItem.getData());
+        if (newData != null) {
+            if (listItem == null) {
+                this.addBeginItem(newData);
+            } else if (listItem.getNext() != null) {
+                listItem.setNext(new ListItem<>(newData, listItem.getNext()));
+                listSize++;
+            } else {
+                listItem.setNext(new ListItem<>(newData));
+                listSize++;
+            }
         }
-        if (listItem.getNext() != null) {
-            newListItem.setNext(listItem.getNext());
-            listItem.setNext(newListItem);
-        } else {
-            newListItem.setNext(null);
-            listItem.setNext(newListItem);
-        }
-        listSize++;
     }
 
-    //удаление узла после указанного узла
+    // + удаление узла после указанного узла
     public void deleteNextItem(ListItem<T> data) {
         if (data.getNext() != null) {
-            data.setNext(data.getNext());
+            data.setNext(data.getNext().getNext());
             listSize--;
         }
     }
 
-    //копирование списка
+    // + копирование списка
     public List<T> copyList() {
-        List<T> newList = new List<T>(null);
         if (head != null) {
+            List<T> newList = new List<>(new ListItem<>(head.getData()));
             ListItem<T> q = newList.getHead();
-            for (ListItem<T> p = head; p != null; p = p.getNext()) {
-                ListItem<T> qNext = new ListItem<>(p.getData());
+            for (ListItem<T> p = head.getNext(); p != null; p = p.getNext()) {
                 newList.addNextNewItem(q, p.getData());  // ссылки разные
-                q = qNext;
+                q = q.getNext();
             }
+            return newList;
         }
-        return newList;
+        return null;
     }
 
     @Override
@@ -163,7 +166,7 @@ public class List<T> {
         //     return super.toString();
         StringBuilder componentsString = new StringBuilder();
         for (ListItem<T> p = head; p != null; p = p.getNext()) {
-            componentsString.append((p.getData()).toString()).append(" ");
+            componentsString.append(p.getData().toString()).append(" ");
         }
         return componentsString.toString();
     }
