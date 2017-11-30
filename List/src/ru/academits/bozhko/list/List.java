@@ -14,7 +14,7 @@ public class List<T> {
     }
 
     // получение размера списка
-    public int getListSize() {
+    public int getSize() {
         return listSize;
     }
 
@@ -24,12 +24,12 @@ public class List<T> {
     }
 
     //получение узла по индексу
-    public ListItem<T> getIndexImen(int index) {
-        if (index < 1 || index > listSize) {
+    public ListItem<T> getIndexItem(int index) {
+        if (index < 0 || index > listSize) {
             throw new IllegalArgumentException("индекс вне диапозона списка");
         }
 
-        int i = 1;
+        int i = 0;
         for (ListItem<T> p = head; p != null; p = p.getNext()) {
             if (i == index) {
                 return p;
@@ -41,45 +41,52 @@ public class List<T> {
 
     // вставка элемента в начало
     public void addBeginItem(T data) {
-        ListItem<T> p = new ListItem<T>(data, head);
-        head = p;
-        this.listSize++;
+        if (data != null) {
+            ListItem<T> p = new ListItem<T>(data, head);
+            head = p;
+            this.listSize++;
+        }
     }
 
     // вставка элемента по индексу
-    public void addIndexItem(int index, T data) {
-        ListItem<T> p = getIndexImen(index);
-        ListItem<T> q = new ListItem<T>(data);
-        q.setNext(p.getNext());
-        p.setNext(q);
-        this.listSize++;
+    public void insertByIndexItem(int index, T data) {
+        if (data != null) {
+            ListItem<T> p = getIndexItem(index);
+            ListItem<T> q = new ListItem<T>(data);
+            q.setNext(p.getNext());
+            p.setNext(q);
+            this.listSize++;
+        }
     }
 
     // получение/изменение значения по указанному индексу.Изменение значения по индексу пусть выдает старое значение.
-    public T changeDataIndexItem(int index, T data) {
-        ListItem<T> p = getIndexImen(index);
-        T oldData = p.getData();
-        p.setData(data);
-        return oldData;
+    public T changeDataIndex(int index, T data) {
+        if (data != null) {
+            ListItem<T> p = getIndexItem(index);
+            T oldData = p.getData();
+            p.setData(data);
+            return oldData;
+        }
+        return null;
     }
 
     //удаление элемента по индексу, пусть выдает значение элемента
-    public T deleteIndexListItem(int index) {
+    public T deleteByIndexItem(int index) {
         T oldData = null;
-        if (index > 1 && index <= listSize) {
-            ListItem<T> p = getIndexImen(index - 1);
+        if (index > 0 && index < listSize) {  // использовать метод +/- следующий элемент
+            ListItem<T> p = getIndexItem(index - 1);
             ListItem<T> q = p.getNext();
             oldData = q.getData();
             p.setNext(q.getNext());
             this.listSize--;
-        } else if (index == 1) {
-            oldData = deleteFirstListItem();
+        } else if (index == 0) {
+            oldData = deleteFirstItem();
         }
         return oldData;
     }
 
     //удаление первого элемента, пусть выдает значение элемента
-    public T deleteFirstListItem() {
+    public T deleteFirstItem() {
         T oldData = head.getData();
         head = head.getNext();
         this.listSize--;
@@ -87,7 +94,7 @@ public class List<T> {
     }
 
     //удаление узла по значению
-    public boolean deleteValueListItem(T data) {
+    public boolean deleteValueItem(T data) {
         for (ListItem<T> p = head; p != null; p = p.getNext()) {
             if (data.equals(p.getData())) {
                 p.setNext(p.getNext().getNext());
@@ -113,6 +120,43 @@ public class List<T> {
         head = p;
     }
 
+    //вставка узла после указанного узла   - а если указан узел не из текущего списка... нужна проверка?
+    public void addNextNewItem(ListItem<T> data, ListItem<T> newData) {
+        if (data == null) {
+            this.addBeginItem(newData.getData());
+        }
+        if (data.getNext() != null) {
+            newData.setNext(data.getNext());
+            data.setNext(newData);
+        } else {
+            newData.setNext(null);
+            data.setNext(newData);
+        }
+        listSize++;
+    }
+
+    //удаление узла после указанного узла
+    public void deleteNextItem(ListItem<T> data) {
+        if (data.getNext() != null) {
+            data.setNext(data.getNext());
+            listSize--;
+        }
+    }
+
+    //копирование списка
+    public List<T> copyList() {
+        List<T> newList = new List<T>(null);
+        if (head != null) {
+            ListItem<T> q = newList.getHead();
+            for (ListItem<T> p = head; p != null; p = p.getNext()) {
+                ListItem<T> qNext = new ListItem<>(p.getData());
+                newList.addNextNewItem(q, qNext);
+                q = qNext;
+            }
+        }
+        return newList;
+    }
+
     @Override
     public String toString() {
         //     return super.toString();
@@ -122,10 +166,4 @@ public class List<T> {
         }
         return componentsString.toString();
     }
-
-    /*
-вставка и удаление узла после указанного узла
-копирование списка
-
- */
 }

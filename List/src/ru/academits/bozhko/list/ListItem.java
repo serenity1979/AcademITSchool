@@ -1,6 +1,6 @@
 package ru.academits.bozhko.list;
 
-class ListItem<T> {
+public class ListItem<T> {
     private T data;
     private ListItem<T> next;
 
