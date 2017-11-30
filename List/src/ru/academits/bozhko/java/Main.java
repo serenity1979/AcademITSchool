@@ -1,7 +1,6 @@
 package ru.academits.bozhko.java;
 
 import ru.academits.bozhko.list.List;
-import ru.academits.bozhko.list.ListItem;
 
 
 public class Main {
@@ -23,7 +22,7 @@ public class Main {
         System.out.printf("односвязный список: %s, старое значение по 2 эелементу = %s%n", list.toString(), oldIthem.toString());
 
         list.deleteFirstItem();
-        list.addNextNewItem(list.getHead(), new ListItem<Integer>(oldIthemDelete)); //????
+        list.addNextNewItem(list.getHead(), oldIthemDelete); //????
         System.out.printf("односвязный список: %s%n", list.toString());
 
         list.turnoverList();

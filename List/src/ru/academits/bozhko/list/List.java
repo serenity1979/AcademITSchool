@@ -121,16 +121,17 @@ public class List<T> {
     }
 
     //вставка узла после указанного узла   - а если указан узел не из текущего списка... нужна проверка?
-    public void addNextNewItem(ListItem<T> data, ListItem<T> newData) {
-        if (data == null) {
-            this.addBeginItem(newData.getData());
+    public void addNextNewItem(ListItem<T> listItem, T newData) {
+        ListItem<T> newListItem = new ListItem<T>(newData);
+        if (listItem == null) {
+            this.addBeginItem(newListItem.getData());
         }
-        if (data.getNext() != null) {
-            newData.setNext(data.getNext());
-            data.setNext(newData);
+        if (listItem.getNext() != null) {
+            newListItem.setNext(listItem.getNext());
+            listItem.setNext(newListItem);
         } else {
-            newData.setNext(null);
-            data.setNext(newData);
+            newListItem.setNext(null);
+            listItem.setNext(newListItem);
         }
         listSize++;
     }
@@ -150,7 +151,7 @@ public class List<T> {
             ListItem<T> q = newList.getHead();
             for (ListItem<T> p = head; p != null; p = p.getNext()) {
                 ListItem<T> qNext = new ListItem<>(p.getData());
-                newList.addNextNewItem(q, qNext);
+                newList.addNextNewItem(q, p.getData());  // ссылки разные
                 q = qNext;
             }
         }
