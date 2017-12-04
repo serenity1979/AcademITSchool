@@ -34,6 +34,9 @@ class ListItem<T> {
 
     @Override
     public String toString() {
+        if (data == null) {
+            return "Null";
+        }
         return data.toString();
     }
 

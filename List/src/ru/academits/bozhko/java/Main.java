@@ -13,7 +13,7 @@ public class Main {
         list.insertByIndexItem(2, null);
         System.out.printf("односвязный список: %s", list.toString());
         System.out.printf("Размер списка = %d%n", list.getSize());
-        System.out.printf("Получение узла по индексу 1:%s%n", list.getIndexItem(1));
+        System.out.printf("Получение узла по индексу 1:%s%n", list.getItem(1));
 
         Integer oldIthemDelete = list.deleteByIndexItem(2);
         System.out.printf("удалим 3 элемент,      наш список: %s, 3-й элемент был равен %s, размер %d%n", list.toString(), oldIthemDelete, list.getSize());
@@ -43,8 +43,14 @@ public class Main {
         list.turnoverList();
         System.out.printf("Список  - Разворот: %s%n", list.toString());
 
+        list.addBeginItem(null);
         List<Integer> listClone = list.copyList();
-        System.out.printf("Список  -    Копия: %s, размер %d", listClone.toString(), listClone.getSize());
+        System.out.printf("Список  -    Копия: %s, размер %d%n", listClone.toString(), listClone.getSize());
+
+        List<Integer> listNull = new List<>();
+        listClone = listNull.copyList();
+        System.out.printf("односвязный список 2 %s, ", listNull.toString());
+        System.out.printf("список - копия 2: %s, размер %d", listClone.toString(), listClone.getSize());
 
     }
 }
