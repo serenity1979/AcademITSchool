@@ -48,8 +48,8 @@ public class List<T> {
     }
 
     // + вставка элемента по индексу
-    public void insertByIndexItem(int index, T data) {
-        if (index < 0 || index >= listSize) {
+    public void insertAtIndex(int index, T data) {
+        if (index < 0 || index > listSize) {
             throw new IndexOutOfBoundsException("индекс вне диапозона списка");
         }
         if (index == 0) {
@@ -99,12 +99,12 @@ public class List<T> {
     }
 
     //+ удаление узла по значению
-    public boolean deleteValueItem(T data) {
+    public boolean delete(T data) {
         if (Objects.equals(data, head.getData())) {
             deleteFirstItem();
             return true;
         }
-        for (ListItem<T> p = head; p != null; p = p.getNext()) {
+        for (ListItem<T> p = head; p.getNext() != null; p = p.getNext()) {
             if (Objects.equals(data, p.getNext().getData())) {
                 deleteNextItem(p);
                 return true;
@@ -115,16 +115,19 @@ public class List<T> {
 
     // + разворот списка за линейное время
     public void turnoverList() {
-        ListItem<T> p = head;
-        ListItem<T> qVariable = head.getNext();
-        p.setNext(null);
-        while (qVariable != null) {
-            ListItem<T> q = qVariable;
-            qVariable = q.getNext();
-            q.setNext(p);
-            p = q;
+        if (head != null) {
+            ListItem<T> p = head;
+            ListItem<T> r = head.getNext();
+            p.setNext(null);
+            while (r != null) {
+                ListItem<T> q = r;
+                r = q.getNext();
+                q.setNext(p);
+                p = q;
+            }
+            head = p;
+
         }
-        head = p;
     }
 
     // + вставка узла после указанного узла   - а если указан узел не из текущего списка... нужна проверка? +
