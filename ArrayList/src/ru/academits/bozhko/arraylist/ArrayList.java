@@ -1,146 +1,234 @@
 package ru.academits.bozhko.arraylist;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class ArrayList<T> implements List<T> {
-    private T[] items;
-    private int size;
+    private T[] items = (T[]) new Object[10];
+    private int listSize;
+    private int modCount;
 
     private class MyIterator implements Iterator<T> {
-        private int currentIndex = 1;
+        private int currentIndex = -1;
+        private int initialModCount = modCount;
 
         @Override
         public boolean hasNext() {
-            return currentIndex + 1 < size;
+            if (initialModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            return currentIndex + 1 < listSize;
         }
 
         @Override
         public T next() {
+            if (currentIndex + 1 > listSize) {
+                throw new NoSuchElementException();
+            }
+            if (initialModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
             ++currentIndex;
             return items[currentIndex];
         }
-
     }
 
+    //Возвращает итератор по элементам в этом списке в правильной последовательности.
     public Iterator<T> iterator() {
         return new MyIterator();
     }
 
+    // Возвращает количество элементов в этом списке.
     @Override
     public int size() {
-        return 0;
+        return listSize;
     }
 
+    // проверка, что список пустой. Возвращает true, если этот список не содержит элементов.
     @Override
     public boolean isEmpty() {
-        return false;
+        return listSize == 0;
     }
 
+    // проверка на наличие объекта в списке. Возвращает true, если этот список содержит указанный элемент.
     @Override
     public boolean contains(Object o) {
-        return false;
+        return this.indexOf(o) != -1;
     }
 
-/*    @Override
-    public Iterator<T> iterator() {
-        return null;
-    }*/
-
+    //Возвращает массив, содержащий все элементы в этом списке в правильной последовательности (от первого до последнего элемента).
     @Override
     public Object[] toArray() {
         return new Object[0];
     }
 
+    // Возвращает массив, содержащий все элементы в этом списке в правильной последовательности (от первого до последнего элемента);
+    // тип выполнения возвращаемого массива - тип указанного массива.
     @Override
     public <T1> T1[] toArray(T1[] a) {
         return null;
     }
 
+    // Добавляет указанный элемент в конец этого списка.
     @Override
     public boolean add(T t) {
-        return false;
+        add(listSize, t);
+        return true;
     }
 
+    // Удаляет первое вхождение указанного элемента из этого списка, если оно присутствует.
     @Override
     public boolean remove(Object o) {
         return false;
     }
 
+    // проверка на наличие списка в списке. Возвращает true, если этот список содержит указанный список.?
     @Override
     public boolean containsAll(Collection<?> c) {
         return false;
     }
 
+    // Добавляет все элементы указанной коллекции в конец этого списка в том порядке, в котором они возвращаются Итератором указанной коллекции.
     @Override
     public boolean addAll(Collection<? extends T> c) {
         return false;
     }
 
+    // Вставляет все элементы указанной коллекции в этот список, начиная с указанной позиции.
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         return false;
     }
 
+    // Удаляет из этого списка все его элементы, которые содержатся в указанной коллекции.
     @Override
     public boolean removeAll(Collection<?> c) {
         return false;
     }
 
+    // Сохраняет только элементы в этом списке, которые содержатся в указанной коллекции.
     @Override
     public boolean retainAll(Collection<?> c) {
         return false;
     }
 
+    // Удаляет все элементы из этого списка.
     @Override
     public void clear() {
+        listSize = 0;
 
     }
 
+    // Возвращает элемент в указанной позиции в этом списке.
     @Override
     public T get(int index) {
-        return null;
+        if (index >= listSize || index < 0) {
+            throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
+        }
+        return items[index];
     }
 
+    // Заменяет элемент в указанной позиции в этом списке указанным элементом. раз не void - возврат старого значения?
     @Override
     public T set(int index, T element) {
-        return null;
+        if (index >= listSize || index < 0) {
+            throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
+        }
+        T oldElement = items[index];
+        items[index] = element;
+        return oldElement;
     }
 
+    // Вставляет указанный элемент в указанную позицию в этом списке.
     @Override
     public void add(int index, T element) {
+        if (index > listSize || index < 0) {
+            throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
+        }
+        listSize++;
+        if (listSize >= items.length) {
+            ensureCapacity();
+        }
 
+        items[index] = element;
+        modCount++;
     }
 
+    // Удаляет элемент в указанной позиции в этом списке. раз не void - возврат старого значения?
     @Override
     public T remove(int index) {
-        return null;
+        if (index >= listSize || index < 0) {
+            throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
+        }
+        T oldElement = items[index];
+        if (index < listSize - 1) {
+
+            System.arraycopy(items, index + 1, items, index, listSize - index - 1);
+        }
+        --listSize;
+        ++modCount;
+        return oldElement;
     }
 
+    // Возвращает индекс первого вхождения указанного элемента в этом списке или -1, если этот список не содержит этот элемент.
     @Override
     public int indexOf(Object o) {
-        return 0;
+        for (int i = 0; i < listSize; ++i) {
+            if (Objects.equals(items[i], o)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
+    // Возвращает индекс последнего вхождения указанного элемента в этом списке или -1, если этот список не содержит элемент.
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        for (int i = listSize - 1; i >= 0; --i) {
+            if (Objects.equals(items[i], o)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
+    // Возвращает итератор списка над элементами в этом списке (в правильной последовательности).
     @Override
     public ListIterator<T> listIterator() {
         return null;
     }
 
+    // Возвращает итератор списка над элементами в этом списке (в правильной последовательности), начиная с указанной позиции в списке.
     @Override
     public ListIterator<T> listIterator(int index) {
         return null;
     }
 
     @Override
+    public String toString() {
+        StringBuilder componentsString = new StringBuilder();
+        componentsString.append("{");
+        for (int i = 0; i < listSize; ++i) {
+            componentsString.append(items[i]).append(",");
+        }
+        componentsString.deleteCharAt(componentsString.length() - 1);
+        return componentsString.append("}").toString();
+    }
+
+    // Возвращает представление части этого списка между указанным fromIndex, inclusive и toIndex, исключительным.
+    // TODO Метод sublist реализовывать не нужно.
+    @Override
     public List<T> subList(int fromIndex, int toIndex) {
         return null;
     }
+
+    private void ensureCapacity() {
+        items = Arrays.copyOf(items, listSize * 2);
+    }
+
+    private void trimToSize() {
+        if (items.length > listSize) {
+            items = Arrays.copyOf(items, listSize);
+        }
+    }
+
 }
