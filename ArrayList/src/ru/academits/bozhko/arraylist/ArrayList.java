@@ -27,7 +27,7 @@ public class ArrayList<T> implements List<T> {
             if (initialModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
-            ++currentIndex;
+            currentIndex++;
             return items[currentIndex];
         }
     }
@@ -90,13 +90,30 @@ public class ArrayList<T> implements List<T> {
     // Добавляет все элементы указанной коллекции в конец этого списка в том порядке, в котором они возвращаются Итератором указанной коллекции.
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        if (listSize + c.size() >= items.length) {
+            ensureCapacity();
+        }
+        listSize++;
+        for (T element : c) {
+            this.add(listSize - 1, element);
+        }
+        return true;
     }
 
     // Вставляет все элементы указанной коллекции в этот список, начиная с указанной позиции.
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        return false;
+        if (index > listSize || index < 0) {
+            throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
+        }
+        listSize++;
+        if (listSize + c.size() >= items.length) {
+            ensureCapacity();
+        }
+        for (T element : c) {
+            this.add(index, element);
+        }
+        return true;
     }
 
     // Удаляет из этого списка все его элементы, которые содержатся в указанной коллекции.
