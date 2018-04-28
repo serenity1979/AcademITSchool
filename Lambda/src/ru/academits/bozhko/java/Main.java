@@ -30,7 +30,7 @@ public class Main {
         System.out.println("Уникальные имена: " + uniqueNames.stream().collect(Collectors.joining(", ")));
 
         // получить список людей младше 18, посчитать для них средний возраст
-        System.out.println("\nСредний возраст из списка людей младше 18: " + persons.stream().filter(age -> age.getAge() < 18).mapToInt(Person::getAge).average());
+        System.out.println(System.lineSeparator()+ "Средний возраст из списка людей младше 18: " + persons.stream().filter(age -> age.getAge() < 18).mapToInt(Person::getAge).average());
 
         // при помощи группировки получить Map, в котором ключи – имена, а значения – средний возраст
         Map<String, Double> nameAndAverageAge = persons.stream()
@@ -40,7 +40,7 @@ public class Main {
         // получить людей, возраст которых от 20 до 45, вывести в консоль их имена в порядке убывания возраста
         List<String> personsBetween20And45 = persons.stream()
                 .filter(age -> age.getAge() >= 20 && age.getAge() <= 45)
-                .sorted(Comparator.comparingInt(Person::getAge))
+                .sorted(Comparator.comparingInt(Person::getAge).reversed())
                 .map(Person::getName).collect(Collectors.toList());
         System.out.println(personsBetween20And45);
     }
