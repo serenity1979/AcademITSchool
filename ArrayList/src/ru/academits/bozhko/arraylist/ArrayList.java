@@ -3,9 +3,22 @@ package ru.academits.bozhko.arraylist;
 import java.util.*;
 
 public class ArrayList<T> implements List<T> {
-    private T[] items = (T[]) new Object[10];
-    private int listSize;
-    private int modCount;
+    @SuppressWarnings("unchecked")
+    private T[] items = (T[]) new Object[10];  // элемент списка
+    private int listSize; // длина списка
+    private int modCount;  //
+
+    public ArrayList() {
+        this.items = (T[]) new Object[10];
+    }
+
+    public ArrayList(int capacity) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException("Illegal Capacity: " + capacity);
+        }
+        //noinspection unchecked
+        this.items = (T[]) new Object[capacity];
+    }
 
     private class MyIterator implements Iterator<T> {
         private int currentIndex = -1;
@@ -78,26 +91,30 @@ public class ArrayList<T> implements List<T> {
     // Удаляет первое вхождение указанного элемента из этого списка, если оно присутствует.
     @Override
     public boolean remove(Object o) {
+        for (int i = 0; i < listSize; i++) {
+            if (Objects.equals(o, items[i])) {
+                this.remove(i);
+                return true;
+            }
+        }
         return false;
     }
 
     // проверка на наличие списка в списке. Возвращает true, если этот список содержит указанный список.?
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        for (Object element : c) {
+            if (!this.contains(element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Добавляет все элементы указанной коллекции в конец этого списка в том порядке, в котором они возвращаются Итератором указанной коллекции.
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        if (listSize + c.size() >= items.length) {
-            ensureCapacity();
-        }
-        listSize++;
-        for (T element : c) {
-            this.add(listSize - 1, element);
-        }
-        return true;
+        return this.addAll(this.listSize, c);
     }
 
     // Вставляет все элементы указанной коллекции в этот список, начиная с указанной позиции.
@@ -106,12 +123,17 @@ public class ArrayList<T> implements List<T> {
         if (index > listSize || index < 0) {
             throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
         }
-        listSize++;
+
         if (listSize + c.size() >= items.length) {
             ensureCapacity();
         }
+        System.arraycopy(items, index, items, index + c.size(), listSize - index);
+        listSize = listSize + c.size();
+        int i = index;
         for (T element : c) {
-            this.add(index, element);
+            items[i] = element;
+            modCount++;
+            i++;
         }
         return true;
     }
@@ -119,13 +141,31 @@ public class ArrayList<T> implements List<T> {
     // Удаляет из этого списка все его элементы, которые содержатся в указанной коллекции.
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        int expecModCount = 0;
+        for (Object element : c) {
+            for (int i = 0; i < listSize; ++i) {
+                if (Objects.equals(items[i], element)) {
+                    this.remove(i);
+                    --i;
+                    expecModCount++;
+                }
+            }
+        }
+        return expecModCount != 0;
     }
 
     // Сохраняет только элементы в этом списке, которые содержатся в указанной коллекции.
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        int expecModCount = 0;
+        for (int i = 0; i < listSize; ++i) {
+            if (!c.contains(items[i])) {
+                this.remove(i);
+                --i;
+                expecModCount++;
+            }
+        }
+        return expecModCount != 0;
     }
 
     // Удаляет все элементы из этого списка.
@@ -238,7 +278,7 @@ public class ArrayList<T> implements List<T> {
         return null;
     }
 
-    private void ensureCapacity() {
+    public void ensureCapacity() {
         items = Arrays.copyOf(items, listSize * 2);
     }
 
