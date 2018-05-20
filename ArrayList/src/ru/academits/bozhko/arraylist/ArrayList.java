@@ -4,9 +4,9 @@ import java.util.*;
 
 public class ArrayList<T> implements List<T> {
     @SuppressWarnings("unchecked")
-    private T[] items = (T[]) new Object[10];  // элемент списка
-    private int listSize; // длина списка
-    private int modCount;  //
+    private T[] items = (T[]) new Object[10];
+    private int listSize;   // длина списка
+    private int modCount;   //
 
     public ArrayList() {
         this.items = (T[]) new Object[10];
@@ -16,20 +16,21 @@ public class ArrayList<T> implements List<T> {
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal Capacity: " + capacity);
         }
-        //noinspection unchecked
+
         this.items = (T[]) new Object[capacity];
     }
 
     private class MyIterator implements Iterator<T> {
-        private int currentIndex = -1;
-        private int initialModCount = modCount;
+
+        int currentIndex = -1;
+        int initialModCount = modCount;
 
         @Override
         public boolean hasNext() {
             if (initialModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
-            return currentIndex + 1 < listSize;
+            return currentIndex != listSize;
         }
 
         @Override
@@ -38,6 +39,9 @@ public class ArrayList<T> implements List<T> {
                 throw new NoSuchElementException();
             }
             if (initialModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (currentIndex >= items.length) {
                 throw new ConcurrentModificationException();
             }
             currentIndex++;
@@ -71,14 +75,24 @@ public class ArrayList<T> implements List<T> {
     //Возвращает массив, содержащий все элементы в этом списке в правильной последовательности (от первого до последнего элемента).
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] array = new Object[listSize];
+        System.arraycopy(items, 0, array, 0, listSize);
+        return array;
     }
 
     // Возвращает массив, содержащий все элементы в этом списке в правильной последовательности (от первого до последнего элемента);
     // тип выполнения возвращаемого массива - тип указанного массива.
+
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+        if (a.length < listSize) {
+            return (T1[]) Arrays.copyOf(items, listSize, a.getClass());
+        }
+        System.arraycopy(items, 0, a, 0, listSize);
+        if (a.length > listSize) {
+            a[listSize] = null;
+        }
+        return a;
     }
 
     // Добавляет указанный элемент в конец этого списка.
@@ -123,18 +137,16 @@ public class ArrayList<T> implements List<T> {
         if (index > listSize || index < 0) {
             throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
         }
-
         if (listSize + c.size() >= items.length) {
-            ensureCapacity();
+            ensureCapacity(c.size() + listSize+1);
         }
-        System.arraycopy(items, index, items, index + c.size(), listSize - index);
         listSize = listSize + c.size();
         int i = index;
         for (T element : c) {
             items[i] = element;
-            modCount++;
             i++;
         }
+        modCount++;
         return true;
     }
 
@@ -172,6 +184,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public void clear() {
         listSize = 0;
+        modCount++;
 
     }
 
@@ -203,9 +216,10 @@ public class ArrayList<T> implements List<T> {
         }
         listSize++;
         if (listSize >= items.length) {
-            ensureCapacity();
+            increaseCapacity();
         }
 
+        System.arraycopy(items, index, items, index + 1, listSize - 1 - index);
         items[index] = element;
         modCount++;
     }
@@ -251,13 +265,13 @@ public class ArrayList<T> implements List<T> {
     // Возвращает итератор списка над элементами в этом списке (в правильной последовательности).
     @Override
     public ListIterator<T> listIterator() {
-        return null;
+        return new MyListIterator();
     }
 
     // Возвращает итератор списка над элементами в этом списке (в правильной последовательности), начиная с указанной позиции в списке.
     @Override
     public ListIterator<T> listIterator(int index) {
-        return null;
+        return new MyListIterator(index);
     }
 
     @Override
@@ -278,8 +292,14 @@ public class ArrayList<T> implements List<T> {
         return null;
     }
 
-    public void ensureCapacity() {
-        items = Arrays.copyOf(items, listSize * 2);
+    private void increaseCapacity() {
+        items = Arrays.copyOf(items, items.length * 2);
+    }
+
+    public void ensureCapacity(int capacity) {
+        if (items.length < capacity) {
+            items = Arrays.copyOf(items, capacity);
+        }
     }
 
     private void trimToSize() {
@@ -288,4 +308,67 @@ public class ArrayList<T> implements List<T> {
         }
     }
 
+    private class MyListIterator extends MyIterator implements ListIterator<T> {
+
+        //  private int initialModCount = modCount;
+
+        MyListIterator() {
+            super();
+            currentIndex = 0;
+        }
+
+        MyListIterator(int index) {
+            super();
+            currentIndex = index;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return currentIndex != 0;
+        }
+
+        @Override
+        public T previous() {
+            if (modCount != initialModCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (currentIndex - 1 < 0) {
+                throw new NoSuchElementException();
+            }
+            --currentIndex;
+            return items[currentIndex];
+        }
+
+        @Override
+        public int nextIndex() {
+            return currentIndex + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return currentIndex - 1;
+        }
+
+        @Override
+        public void set(T t) {
+            items[currentIndex] = t;
+        }
+
+        @Override
+
+        public void remove() {
+            ArrayList.this.remove(currentIndex);
+            initialModCount = modCount;
+        }
+
+        @Override
+        public void add(T t) {
+            if (modCount != initialModCount) {
+                throw new ConcurrentModificationException();
+            }
+
+            ArrayList.this.add(currentIndex, t);
+            initialModCount = modCount;
+        }
+    }
 }
