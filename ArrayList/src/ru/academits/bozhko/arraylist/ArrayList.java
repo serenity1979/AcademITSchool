@@ -3,12 +3,12 @@ package ru.academits.bozhko.arraylist;
 import java.util.*;
 
 public class ArrayList<T> implements List<T> {
-    @SuppressWarnings("unchecked")
-    private T[] items = (T[]) new Object[10];
-    private int listSize;   // длина списка
-    private int modCount;   //
+    private T[] items;
+    private int listSize;
+    private int modCount;
 
     public ArrayList() {
+        //noinspection unchecked
         this.items = (T[]) new Object[10];
     }
 
@@ -17,7 +17,9 @@ public class ArrayList<T> implements List<T> {
             throw new IllegalArgumentException("Illegal Capacity: " + capacity);
         }
 
+        //noinspection unchecked
         this.items = (T[]) new Object[capacity];
+        listSize = capacity;
     }
 
     private class MyIterator implements Iterator<T> {
@@ -30,7 +32,7 @@ public class ArrayList<T> implements List<T> {
             if (initialModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
-            return currentIndex != listSize;
+            return currentIndex + 1 < listSize;
         }
 
         @Override
@@ -44,6 +46,7 @@ public class ArrayList<T> implements List<T> {
             if (currentIndex >= items.length) {
                 throw new ConcurrentModificationException();
             }
+
             currentIndex++;
             return items[currentIndex];
         }
@@ -86,8 +89,10 @@ public class ArrayList<T> implements List<T> {
     @Override
     public <T1> T1[] toArray(T1[] a) {
         if (a.length < listSize) {
+            //noinspection unchecked
             return (T1[]) Arrays.copyOf(items, listSize, a.getClass());
         }
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(items, 0, a, 0, listSize);
         if (a.length > listSize) {
             a[listSize] = null;
@@ -137,47 +142,52 @@ public class ArrayList<T> implements List<T> {
         if (index > listSize || index < 0) {
             throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
         }
-        if (listSize + c.size() >= items.length) {
-            ensureCapacity(c.size() + listSize+1);
+        if (c.size() == 0) {
+            return false;
         }
-        listSize = listSize + c.size();
+        int lengthArray = listSize + c.size();
+        if (lengthArray >= items.length) {
+            ensureCapacity(c.size() + listSize);
+        }
+
         int i = index;
         for (T element : c) {
             items[i] = element;
-            i++;
+            ++i;
         }
         modCount++;
+        listSize += c.size();
         return true;
     }
 
     // Удаляет из этого списка все его элементы, которые содержатся в указанной коллекции.
     @Override
     public boolean removeAll(Collection<?> c) {
-        int expecModCount = 0;
+        int expectModCount = 0;
         for (Object element : c) {
             for (int i = 0; i < listSize; ++i) {
                 if (Objects.equals(items[i], element)) {
                     this.remove(i);
                     --i;
-                    expecModCount++;
+                    expectModCount++;
                 }
             }
         }
-        return expecModCount != 0;
+        return expectModCount != 0;
     }
 
     // Сохраняет только элементы в этом списке, которые содержатся в указанной коллекции.
     @Override
     public boolean retainAll(Collection<?> c) {
-        int expecModCount = 0;
+        int expectModCount = 0;
         for (int i = 0; i < listSize; ++i) {
             if (!c.contains(items[i])) {
                 this.remove(i);
                 --i;
-                expecModCount++;
+                expectModCount++;
             }
         }
-        return expecModCount != 0;
+        return expectModCount != 0;
     }
 
     // Удаляет все элементы из этого списка.
@@ -214,14 +224,13 @@ public class ArrayList<T> implements List<T> {
         if (index > listSize || index < 0) {
             throw new IndexOutOfBoundsException("Индекс : " + index + " вне границ списка");
         }
-        listSize++;
         if (listSize >= items.length) {
             increaseCapacity();
         }
-
-        System.arraycopy(items, index, items, index + 1, listSize - 1 - index);
+        System.arraycopy(items, index, items, index + 1, listSize - index);
         items[index] = element;
         modCount++;
+        listSize++;
     }
 
     // Удаляет элемент в указанной позиции в этом списке. раз не void - возврат старого значения?
@@ -281,7 +290,9 @@ public class ArrayList<T> implements List<T> {
         for (int i = 0; i < listSize; ++i) {
             componentsString.append(items[i]).append(",");
         }
-        componentsString.deleteCharAt(componentsString.length() - 1);
+        if (listSize > 0) {
+            componentsString.deleteCharAt(componentsString.length() - 1);
+        }
         return componentsString.append("}").toString();
     }
 
@@ -309,9 +320,6 @@ public class ArrayList<T> implements List<T> {
     }
 
     private class MyListIterator extends MyIterator implements ListIterator<T> {
-
-        //  private int initialModCount = modCount;
-
         MyListIterator() {
             super();
             currentIndex = 0;
