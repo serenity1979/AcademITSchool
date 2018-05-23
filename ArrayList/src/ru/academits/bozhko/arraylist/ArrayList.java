@@ -145,11 +145,8 @@ public class ArrayList<T> implements List<T> {
         if (c.size() == 0) {
             return false;
         }
-        int lengthArray = listSize + c.size();
-        if (lengthArray >= items.length) {
-            ensureCapacity(c.size() + listSize);
-        }
-
+        ensureCapacity(listSize + c.size());
+        System.arraycopy(items, index, items, index + c.size(), listSize - index);
         int i = index;
         for (T element : c) {
             items[i] = element;
@@ -163,31 +160,31 @@ public class ArrayList<T> implements List<T> {
     // Удаляет из этого списка все его элементы, которые содержатся в указанной коллекции.
     @Override
     public boolean removeAll(Collection<?> c) {
-        int expectModCount = 0;
+        int expectedModCount = 0;
         for (Object element : c) {
             for (int i = 0; i < listSize; ++i) {
                 if (Objects.equals(items[i], element)) {
                     this.remove(i);
                     --i;
-                    expectModCount++;
+                    expectedModCount++;
                 }
             }
         }
-        return expectModCount != 0;
+        return expectedModCount != 0;
     }
 
     // Сохраняет только элементы в этом списке, которые содержатся в указанной коллекции.
     @Override
     public boolean retainAll(Collection<?> c) {
-        int expectModCount = 0;
+        int expectedModCount = 0;
         for (int i = 0; i < listSize; ++i) {
             if (!c.contains(items[i])) {
                 this.remove(i);
                 --i;
-                expectModCount++;
+                expectedModCount++;
             }
         }
-        return expectModCount != 0;
+        return expectedModCount != 0;
     }
 
     // Удаляет все элементы из этого списка.
@@ -274,7 +271,7 @@ public class ArrayList<T> implements List<T> {
     // Возвращает итератор списка над элементами в этом списке (в правильной последовательности).
     @Override
     public ListIterator<T> listIterator() {
-        return new MyListIterator();
+        return new MyListIterator(0);
     }
 
     // Возвращает итератор списка над элементами в этом списке (в правильной последовательности), начиная с указанной позиции в списке.
@@ -320,10 +317,6 @@ public class ArrayList<T> implements List<T> {
     }
 
     private class MyListIterator extends MyIterator implements ListIterator<T> {
-        MyListIterator() {
-            super();
-            currentIndex = 0;
-        }
 
         MyListIterator(int index) {
             super();

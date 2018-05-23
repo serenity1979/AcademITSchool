@@ -30,7 +30,7 @@ public class Main {
         System.out.println("List 4:" + myList4.toString());
         myList4.addAll(myList0);
         System.out.println("List 4 (+List0):" + myList4.toString());
-        myList4.addAll(myList1);
+        myList4.addAll(1, myList1);
         System.out.println("List 4 (+List1):" + myList4.toString());
 
         myList4.retainAll(myList1);
