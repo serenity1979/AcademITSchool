@@ -19,7 +19,6 @@ public class ArrayList<T> implements List<T> {
 
         //noinspection unchecked
         this.items = (T[]) new Object[capacity];
-        listSize = capacity;
     }
 
     private class MyIterator implements Iterator<T> {
