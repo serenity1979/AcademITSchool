@@ -1,10 +1,7 @@
 package ru.academits.bozhko.hashtable;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -15,6 +12,11 @@ public class HashTable<T> implements Collection<T> {
     private int modCount;
 
     public HashTable() {
+        this.hashTable = new ArrayList[100];
+    }
+
+    public HashTable(int capacity) {
+        this.hashTable = new ArrayList[capacity];
     }
 
     // удаляет все элементы из списка, который удовлетворяет данному Предикату
@@ -41,7 +43,7 @@ public class HashTable<T> implements Collection<T> {
         return null;
     }
 
-    //Returns the number of elements in this collection.
+    //Возвращает количество элементов в этой коллекции.
     @Override
     public int size() {
         return tableSize;
@@ -63,7 +65,7 @@ public class HashTable<T> implements Collection<T> {
     //Возвращает итератор по элементам в этой коллекции.
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new HashTableIterator();
     }
 
     //Возвращает массив, содержащий все элементы в этой коллекции.
@@ -81,12 +83,21 @@ public class HashTable<T> implements Collection<T> {
     //Гарантирует, что эта Коллекция содержит указанный элемент (необязательная операция).
     @Override
     public boolean add(T t) {
-        return false;
+        int i = getIndex(t);
+        if (hashTable[i] == null) {
+            hashTable[i] = new ArrayList<>();
+            tableSize++;
+        }
+        this.hashTable[i].add(t);
+        modCount++;
+        return true;
     }
 
     //Удаляет один экземпляр указанного элемента из этой коллекции, если он присутствует (необязательная операция).
     @Override
     public boolean remove(Object o) {
+        int i = getIndex(o);
+
         return false;
     }
 
@@ -117,7 +128,39 @@ public class HashTable<T> implements Collection<T> {
     //Удаляет все элементы из этой коллекции (необязательная операция).
     @Override
     public void clear() {
+    }
+
+    private int getIndex(Object o) {
+        return Math.abs(o.hashCode() % hashTable.length);
+    }
+
+    private class HashTableIterator implements Iterator<T> {
+        private int currentIndex = -1;
+        private int initialModCount = modCount;
 
 
+        @Override
+        public boolean hasNext() {
+            if (initialModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            return currentIndex + 1 < tableSize;
+        }
+
+        @Override
+        public T next() {
+            if (currentIndex + 1 > tableSize) {
+                throw new NoSuchElementException();
+            }
+            if (initialModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (currentIndex >= hashTable.length) {
+                throw new ConcurrentModificationException();
+            }
+
+            currentIndex++;
+            return hashTable[currentIndex].get(0); // надо выводить элемент списка!
+        }
     }
 }
