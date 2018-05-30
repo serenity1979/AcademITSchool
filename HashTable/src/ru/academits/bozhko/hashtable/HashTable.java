@@ -71,13 +71,25 @@ public class HashTable<T> implements Collection<T> {
     //Возвращает массив, содержащий все элементы в этой коллекции.
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] array = new Object[tableSize];
+        int i = 0;
+        for (T element : this) {
+            array[i] = element;
+            i++;
+        }
+        return array;
     }
 
     //?? Возвращает массив, содержащий все элементы в этой коллекции; Тип времени выполнения возвращаемого массива-указанный массив.
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+        if (a.length < tableSize)
+            //noinspection unchecked
+            return (T1[]) Arrays.copyOf(this.toArray(), tableSize, a.getClass());
+        System.arraycopy(this.toArray(), 0, a, 0, tableSize);
+        if (a.length > tableSize)
+            a[tableSize] = null;
+        return a;
     }
 
     //Гарантирует, что эта Коллекция содержит указанный элемент (необязательная операция).
@@ -86,9 +98,9 @@ public class HashTable<T> implements Collection<T> {
         int i = getIndex(t);
         if (hashTable[i] == null) {
             hashTable[i] = new ArrayList<>();
-            tableSize++;
         }
         this.hashTable[i].add(t);
+        tableSize++;
         modCount++;
         return true;
     }
@@ -97,32 +109,64 @@ public class HashTable<T> implements Collection<T> {
     @Override
     public boolean remove(Object o) {
         int i = getIndex(o);
-
-        return false;
+        boolean statusStep = false;
+        if (hashTable[i].indexOf(o) >= 0) {
+            hashTable[i].remove(o);
+            tableSize--;
+            modCount++;
+            statusStep = true;
+        }
+        return statusStep;
     }
 
     //Возвращает True, если Коллекция содержит все элементы в указанном наборе.
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        for (Object element : c) {
+            if (!this.contains(element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     //Добавляет все элементы указанной коллекции в эту коллекцию (необязательная операция).
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        boolean statusStep = false;
+        for (T element : c) {
+            statusStep = this.add(element);
+        }
+        return statusStep;
     }
 
     //Удаляет все элементы этой коллекции, которые также содержатся в указанной коллекции (необязательная операция).
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        int countTrueStep = 0;
+        for (Object element : c) {
+            for (int i = 0; i < hashTable.length; i++) {
+                if (hashTable[i].remove(element)) {
+                    countTrueStep++;
+                }
+            }
+        }
+        tableSize -= countTrueStep;
+        modCount++;
+        return countTrueStep != 0;
     }
 
     //Сохраняет только элементы в этой коллекции, содержащиеся в указанной коллекции (необязательная операция).
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        int countTrueStep = 0;
+        for (ArrayList<T> rowOfTable : this.hashTable) {
+            for (Object element : c) {
+                rowOfTable.remove(element);
+
+            }
+        }
+        return countTrueStep != 0;
     }
 
     //Удаляет все элементы из этой коллекции (необязательная операция).
@@ -137,7 +181,8 @@ public class HashTable<T> implements Collection<T> {
     private class HashTableIterator implements Iterator<T> {
         private int currentIndex = -1;
         private int initialModCount = modCount;
-
+        private int currentListIndex = 0;
+        private int currentHashIndex = 0;
 
         @Override
         public boolean hasNext() {
@@ -159,8 +204,14 @@ public class HashTable<T> implements Collection<T> {
                 throw new ConcurrentModificationException();
             }
 
+            if (hashTable[currentHashIndex].size() >= currentListIndex + 1) {
+                currentListIndex++;
+            } else {
+                currentHashIndex++;
+                currentListIndex = 0;
+            }
             currentIndex++;
-            return hashTable[currentIndex].get(0); // надо выводить элемент списка!
+            return hashTable[currentIndex].get(currentListIndex);// надо выводить элемент списка!
         }
     }
 }
