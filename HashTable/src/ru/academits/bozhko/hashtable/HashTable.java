@@ -211,7 +211,7 @@ public class HashTable<T> implements Collection<T> {
                 currentListIndex = 0;
             }
             currentIndex++;
-            return hashTable[currentIndex].get(currentListIndex);// надо выводить элемент списка!
+            return hashTable[currentHashIndex].get(currentListIndex);// надо выводить элемент списка!
         }
     }
 }
