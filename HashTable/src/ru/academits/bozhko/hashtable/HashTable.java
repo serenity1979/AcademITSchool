@@ -19,30 +19,6 @@ public class HashTable<T> implements Collection<T> {
         this.hashTable = new ArrayList[capacity];
     }
 
-    // удаляет все элементы из списка, который удовлетворяет данному Предикату
-    @Override
-    public boolean removeIf(Predicate<? super T> filter) {
-        return false;
-    }
-
-    //Создает последний элементы в этой коллекции.
-    @Override
-    public Spliterator<T> spliterator() {
-        return null;
-    }
-
-    //Возвращает последовательный поток с этой коллекцией в качестве источника.
-    @Override
-    public Stream<T> stream() {
-        return null;
-    }
-
-    //Возвращает возможно параллельный поток с этой коллекцией в качестве источника.
-    @Override
-    public Stream<T> parallelStream() {
-        return null;
-    }
-
     //Возвращает количество элементов в этой коллекции.
     @Override
     public int size() {
