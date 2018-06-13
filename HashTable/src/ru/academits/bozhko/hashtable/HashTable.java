@@ -2,8 +2,6 @@ package ru.academits.bozhko.hashtable;
 
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 
 public class HashTable<T> implements Collection<T> {
@@ -12,10 +10,12 @@ public class HashTable<T> implements Collection<T> {
     private int modCount;
 
     public HashTable() {
+        //noinspection unchecked
         this.hashTable = new ArrayList[100];
     }
 
     public HashTable(int capacity) {
+        //noinspection unchecked
         this.hashTable = new ArrayList[capacity];
     }
 
@@ -59,12 +59,14 @@ public class HashTable<T> implements Collection<T> {
     //?? Возвращает массив, содержащий все элементы в этой коллекции; Тип времени выполнения возвращаемого массива-указанный массив.
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        if (a.length < tableSize)
+        if (a.length < tableSize) {
             //noinspection unchecked
             return (T1[]) Arrays.copyOf(this.toArray(), tableSize, a.getClass());
+        }
         System.arraycopy(this.toArray(), 0, a, 0, tableSize);
-        if (a.length > tableSize)
+        if (a.length > tableSize) {
             a[tableSize] = null;
+        }
         return a;
     }
 
@@ -86,8 +88,7 @@ public class HashTable<T> implements Collection<T> {
     public boolean remove(Object o) {
         int i = getIndex(o);
         boolean statusStep = false;
-        if (hashTable[i].indexOf(o) >= 0) {
-            hashTable[i].remove(o);
+        if (hashTable[i].remove(o)) {
             tableSize--;
             modCount++;
             statusStep = true;
@@ -148,6 +149,13 @@ public class HashTable<T> implements Collection<T> {
     //Удаляет все элементы из этой коллекции (необязательная операция).
     @Override
     public void clear() {
+        for (ArrayList<T> list : hashTable) {
+            if (list != null && list.size() > 0) {
+                list.clear();
+                modCount++;
+            }
+        }
+        tableSize = 0;
     }
 
     private int getIndex(Object o) {
@@ -163,7 +171,7 @@ public class HashTable<T> implements Collection<T> {
         @Override
         public boolean hasNext() {
             if (initialModCount != modCount) {
-                throw new ConcurrentModificationException();
+                throw new ConcurrentModificationException("не последовательный скачок в модификации пропущен шаг");
             }
             return currentIndex + 1 < tableSize;
         }
@@ -171,13 +179,13 @@ public class HashTable<T> implements Collection<T> {
         @Override
         public T next() {
             if (currentIndex + 1 > tableSize) {
-                throw new NoSuchElementException();
+                throw new NoSuchElementException("Индекс за пределами таблицы, индекс " + currentIndex);
             }
             if (initialModCount != modCount) {
-                throw new ConcurrentModificationException();
+                throw new ConcurrentModificationException("не последовательный скачок в модификации пропущен шаг, модификаций= " + modCount);
             }
             if (currentIndex >= hashTable.length) {
-                throw new ConcurrentModificationException();
+                throw new ConcurrentModificationException("Индекс за пределами длины масива/таблицы, индекс " + currentIndex + ">" + hashTable.length);
             }
 
             if (hashTable[currentHashIndex].size() >= currentListIndex + 1) {
