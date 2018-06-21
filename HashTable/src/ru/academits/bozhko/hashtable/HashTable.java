@@ -63,6 +63,7 @@ public class HashTable<T> implements Collection<T> {
             //noinspection unchecked
             return (T1[]) Arrays.copyOf(this.toArray(), tableSize, a.getClass());
         }
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(this.toArray(), 0, a, 0, tableSize);
         if (a.length > tableSize) {
             a[tableSize] = null;
@@ -118,12 +119,12 @@ public class HashTable<T> implements Collection<T> {
     }
 
     //Удаляет все элементы этой коллекции, которые также содержатся в указанной коллекции (необязательная операция).
-    @Override
     public boolean removeAll(Collection<?> c) {
         int countTrueStep = 0;
         for (Object element : c) {
-            for (int i = 0; i < hashTable.length; i++) {
-                if (hashTable[i].remove(element)) {
+            int i = getIndex(element);
+            if (hashTable[i] != null && hashTable[i].size() >= 1) {
+                if (remove(element)) {
                     countTrueStep++;
                 }
             }
@@ -139,8 +140,10 @@ public class HashTable<T> implements Collection<T> {
         int countTrueStep = 0;
         for (ArrayList<T> rowOfTable : this.hashTable) {
             for (Object element : c) {
-                rowOfTable.remove(element);
-
+                if (rowOfTable != null && rowOfTable.size() > 0) {
+                    remove(element);
+                    countTrueStep++;
+                }
             }
         }
         return countTrueStep != 0;
@@ -165,8 +168,8 @@ public class HashTable<T> implements Collection<T> {
     private class HashTableIterator implements Iterator<T> {
         private int currentIndex = -1;
         private int initialModCount = modCount;
-        private int currentListIndex = 0;
-        private int currentHashIndex = 0;
+        private int currentListIndex = 0; // индекс по списку в массиве ХЭШ-таблицы
+        private int currentHashIndex = 0; // индекс по массиву ХЭШ-таблице
 
         @Override
         public boolean hasNext() {
@@ -188,14 +191,21 @@ public class HashTable<T> implements Collection<T> {
                 throw new ConcurrentModificationException("Индекс за пределами длины масива/таблицы, индекс " + currentIndex + ">" + hashTable.length);
             }
 
-            if (hashTable[currentHashIndex].size() >= currentListIndex + 1) {
-                currentListIndex++;
-            } else {
-                currentHashIndex++;
-                currentListIndex = 0;
+            T element;
+            for (int i = currentHashIndex; i < hashTable.length; i++) {      //  проходим по массиву
+                currentHashIndex = i;                                        //  увеличиваем индекс массива после прохода по индексу, у которого нет списка. чтобы не проходит их дважы и не зацикливаться
+                if (hashTable[i] != null && hashTable[i].size() > 0) {       //  проверяем что в массиве есть список и в ХЭШ-талице есть элементы
+                    element = hashTable[i].get(currentListIndex);            //  возвращает объект из списка по индексу списка
+                    currentIndex++;                                          //  текущий курсор увеличиваем на единицу
+                    currentListIndex++;                                      //  увеличиваем индекс в списке на следующий
+                    if (currentListIndex == hashTable[i].size()) {           //  проверяем индекс списка на вход за пределы списка  - что это последний элемент списка
+                        this.currentHashIndex++;                             //  переход на следующий индекс массива
+                        this.currentListIndex = 0;                           //  переход на начало списка
+                    }
+                    return element;                                             //  возвращает объект
+                }
             }
-            currentIndex++;
-            return hashTable[currentHashIndex].get(currentListIndex);// надо выводить элемент списка!
+            return null;
         }
     }
 }
