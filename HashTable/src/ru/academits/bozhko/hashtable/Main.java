@@ -6,35 +6,50 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        HashTable<Vector> myTable1 = new HashTable<>();
-        myTable1.add(new Vector(3));
-        myTable1.add(new Vector(new double[]{10, 5.2}));
-        myTable1.add(new Vector(4, new double[]{10, 12, 3}));
-        System.out.println("Размер таблицы myTable1: " + myTable1.size());
+        HashTable<Vector> myTable = new HashTable<>();
+        myTable.add(null);
+        myTable.add(new Vector(3));
+        myTable.add(new Vector(new double[]{10, 5.2}));
+        myTable.add(new Vector(4, new double[]{10, 12, 3}));
+        System.out.println("Размер таблицы myTable: " + myTable.size());
 
-        for (Vector element : myTable1) {
-            System.out.println(element);
+        for (Vector element : myTable) {
+            System.out.print(element + " ");
         }
 
-        HashTable<Vector> myTable2 = new HashTable<>(2);
-        myTable2.add(new Vector(4, new double[]{10, 12, 3}));
-        System.out.println("Размер таблицы myTable2: " + myTable2.size());
 
-        ArrayList<Vector> myList = new ArrayList<>();
-        myList.add(new Vector(4, new double[]{10, 12, 3}));
-
-        for (Vector iterator : myTable1) {
-            System.out.print(iterator + " ");
-        }
-        System.out.println();
-        System.out.println("Количество элементов в Хэш-таблице: " + myTable1.size());
-
-        Object[] array = myTable1.toArray();
+        System.out.println("\nПреобразование в массив:");
+        Object[] array = myTable.toArray();
         for (Object e : array) {
             System.out.print(e + " ");
         }
+        System.out.println();
 
-        myTable1.removeAll(myList);
-        System.out.println("Размер таблицы myTable1: " + myTable1.size());
+        ArrayList<Vector> myList = new ArrayList<>();
+        myList.add(new Vector(4, new double[]{10, 12, 3}));
+        System.out.println("Список:");
+        for (Vector element : myList) {
+            System.out.print(element + " ");
+        }
+        System.out.println();
+
+        myTable.removeAll(myList);
+        System.out.println("Размер таблицы myTable, после удаления элементов которые есть в списке: " + myTable.size());
+        for (Vector element : myTable) {
+            System.out.print(element + " ");
+        }
+
+        myTable.add(new Vector(new double[]{101, 102}));
+        myTable.add(new Vector(4, new double[]{10, 12, 3}));
+        System.out.println("\nmyTable: " + myTable.size());
+        for (Vector element : myTable) {
+            System.out.print(element + " ");
+        }
+
+        myTable.retainAll(myList);
+        System.out.println("\nmyTable1, после удаления всех элементов, кроме тех, которые содержатся в коллекции: " + myTable.size());
+        for (Vector element : myTable) {
+            System.out.print(element + " ");
+        }
     }
 }

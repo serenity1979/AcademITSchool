@@ -5,15 +5,17 @@ import java.util.*;
 
 
 public class HashTable<T> implements Collection<T> {
-    private ArrayList<T>[] hashTable;
-    private int tableSize;
-    private int modCount;
+    private ArrayList<T>[] hashTable;  // коллекция, массив объектов
+    private int tableSize;             // размер коллекции, реальное количество элеметов
+    private int modCount;              // количество изменений
 
+    // конструктор создания массива обектов по умолчанию
     public HashTable() {
         //noinspection unchecked
         this.hashTable = new ArrayList[100];
     }
 
+    // конструктор создания массива обектов определенного размера
     public HashTable(int capacity) {
         //noinspection unchecked
         this.hashTable = new ArrayList[capacity];
@@ -34,8 +36,8 @@ public class HashTable<T> implements Collection<T> {
     //! Возвращает true, если эта Коллекция содержит указанный элемент.
     @Override
     public boolean contains(Object o) {
-        int i = (o == null) ? 0 : Math.abs(o.hashCode() % hashTable.length);
-        return hashTable[i] != null && hashTable[i].contains(o);
+        int i = getIndex(o);
+        return hashTable[i] != null && hashTable[i].contains(o);  // метод contains проверяет есть ли в массиве элемент
     }
 
     //Возвращает итератор по элементам в этой коллекции.
@@ -44,12 +46,12 @@ public class HashTable<T> implements Collection<T> {
         return new HashTableIterator();
     }
 
-    //Возвращает массив, содержащий все элементы в этой коллекции.
+    //Возвращает массив, содержащий все элементы в этой коллекции. возвращает новый массив объектов
     @Override
     public Object[] toArray() {
-        Object[] array = new Object[tableSize];
+        Object[] array = new Object[tableSize];  // создаем массив длиной коллекции
         int i = 0;
-        for (T element : this) {
+        for (T element : this) {                 // проход по iterator this hashTable
             array[i] = element;
             i++;
         }
@@ -57,6 +59,7 @@ public class HashTable<T> implements Collection<T> {
     }
 
     //?? Возвращает массив, содержащий все элементы в этой коллекции; Тип времени выполнения возвращаемого массива-указанный массив.
+    // дописывает в передаваемый массив
     @Override
     public <T1> T1[] toArray(T1[] a) {
         if (a.length < tableSize) {
@@ -118,13 +121,13 @@ public class HashTable<T> implements Collection<T> {
         return statusStep;
     }
 
-    //Удаляет все элементы этой коллекции, которые также содержатся в указанной коллекции (необязательная операция).
+    //удаляет все объекты коллекции c из текущей коллекции. Если текущая коллекция изменилась, возвращает true, иначе возвращается false
     public boolean removeAll(Collection<?> c) {
         int countTrueStep = 0;
         for (Object element : c) {
             int i = getIndex(element);
-            if (hashTable[i] != null && hashTable[i].size() >= 1) {
-                if (remove(element)) {
+            if (hashTable[i] != null && hashTable[i].size() > 0) {
+                if (hashTable[i].remove(element)) {
                     countTrueStep++;
                 }
             }
@@ -134,15 +137,20 @@ public class HashTable<T> implements Collection<T> {
         return countTrueStep != 0;
     }
 
-    //Сохраняет только элементы в этой коллекции, содержащиеся в указанной коллекции (необязательная операция).
+    //удаляет все объекты из текущей коллекции, кроме тех, которые содержатся в коллекции c.
+    // Если текущая коллекция после удаления изменилась, возвращает true, иначе возвращается false
     @Override
     public boolean retainAll(Collection<?> c) {
         int countTrueStep = 0;
-        for (ArrayList<T> rowOfTable : this.hashTable) {
-            for (Object element : c) {
-                if (rowOfTable != null && rowOfTable.size() > 0) {
-                    remove(element);
-                    countTrueStep++;
+        for (ArrayList<T> rowOfTable : this.hashTable) {              // проходим по индексу массива
+            if (rowOfTable != null && rowOfTable.size() > 0) {
+                for (int i = 0; i < rowOfTable.size(); i++) {          // проходим по коллекции по индексу массива
+                    if (!c.contains(rowOfTable.get(i))) {       // проверяем что элемент коллекции есть в с
+                        rowOfTable.remove(rowOfTable.get(i));   // если нет удаляем и меняем количество эелементов внашей коллекции,
+                        countTrueStep++;
+                        tableSize--;
+                        i--;                                     //  и делаем шаг назад, так элемент удален и другие элементы коллекции сдвинулись
+                    }
                 }
             }
         }
@@ -161,8 +169,9 @@ public class HashTable<T> implements Collection<T> {
         tableSize = 0;
     }
 
+    // определения индекса в массиве для объекта
     private int getIndex(Object o) {
-        return Math.abs(o.hashCode() % hashTable.length);
+        return (o == null) ? 0 : Math.abs(o.hashCode() % hashTable.length);
     }
 
     private class HashTableIterator implements Iterator<T> {
@@ -176,19 +185,17 @@ public class HashTable<T> implements Collection<T> {
             if (initialModCount != modCount) {
                 throw new ConcurrentModificationException("не последовательный скачок в модификации пропущен шаг");
             }
+            if (currentIndex + 1 > tableSize) {
+                throw new NoSuchElementException("Индекс за пределами таблицы, индекс " + currentIndex);
+            }
+
             return currentIndex + 1 < tableSize;
         }
 
         @Override
         public T next() {
-            if (currentIndex + 1 > tableSize) {
-                throw new NoSuchElementException("Индекс за пределами таблицы, индекс " + currentIndex);
-            }
-            if (initialModCount != modCount) {
-                throw new ConcurrentModificationException("не последовательный скачок в модификации пропущен шаг, модификаций= " + modCount);
-            }
-            if (currentIndex >= hashTable.length) {
-                throw new ConcurrentModificationException("Индекс за пределами длины масива/таблицы, индекс " + currentIndex + ">" + hashTable.length);
+            if (!hasNext()) {
+                return null;
             }
 
             T element;
@@ -202,7 +209,7 @@ public class HashTable<T> implements Collection<T> {
                         this.currentHashIndex++;                             //  переход на следующий индекс массива
                         this.currentListIndex = 0;                           //  переход на начало списка
                     }
-                    return element;                                             //  возвращает объект
+                    return element;                                          //  возвращает объект
                 }
             }
             return null;
