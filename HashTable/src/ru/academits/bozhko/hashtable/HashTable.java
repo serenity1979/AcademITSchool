@@ -127,7 +127,7 @@ public class HashTable<T> implements Collection<T> {
         for (Object element : c) {
             int i = getIndex(element);
             if (hashTable[i] != null && hashTable[i].size() > 0) {
-                if (hashTable[i].remove(element)) {
+                while (hashTable[i].remove(element)) {
                     countTrueStep++;
                 }
             }
